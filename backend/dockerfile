@@ -13,10 +13,8 @@ COPY . /var/www/html
 # Vérifier le contenu du répertoire de travail
 RUN ls -la /var/www/html
 
-# Changer les permissions pour le dossier de l'application
-RUN chown -R www-data:www-data /var/www/html
-
 # Assurer que le fichier artisan est exécutable
+# (Cette commande échouera si le fichier artisan est absent, ce qui est le cas ici)
 RUN chmod +x /var/www/html/artisan
 
 # Exposer le port 9200
