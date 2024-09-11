@@ -1,4 +1,4 @@
-# Utiliser une image officielle PHP sans Apache
+# Utiliser une image officielle PHP avec Composer
 FROM php:8.2-cli
 
 # Définir le répertoire de travail
@@ -7,8 +7,14 @@ WORKDIR /var/www/html
 # Installer les extensions PHP nécessaires
 RUN docker-php-ext-install pdo pdo_mysql
 
+# Installer Composer (gestionnaire de dépendances PHP)
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
 # Copier les fichiers de l'application dans le conteneur
 COPY . /var/www/html
+
+# Installer les dépendances de Laravel
+RUN composer install --no-dev --optimize-autoloader
 
 # Changer les permissions pour le dossier de l'application
 RUN chown -R www-data:www-data /var/www/html
