@@ -8,7 +8,7 @@ WORKDIR /var/www/html
 RUN docker-php-ext-install pdo pdo_mysql
 
 # Copier les fichiers de l'application dans le conteneur
-COPY . /var/www/html
+COPY backend/ /var/www/html
 
 # Vérifier le contenu du répertoire de travail
 RUN ls -la /var/www/html
