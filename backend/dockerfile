@@ -14,7 +14,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 COPY . /var/www/html
 
 # Installer les dépendances de Laravel
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install --no-dev --optimize-autoloader || { cat /var/www/html/composer*.json; exit 1; }
 
 # Changer les permissions pour le dossier de l'application
 RUN chown -R www-data:www-data /var/www/html
