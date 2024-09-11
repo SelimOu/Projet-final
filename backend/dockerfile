@@ -1,4 +1,4 @@
-# Utiliser une image officielle PHP sans Apache
+# Utiliser une image officielle PHP avec des extensions nécessaires
 FROM php:8.2-cli
 
 # Définir le répertoire de travail
@@ -7,14 +7,17 @@ WORKDIR /var/www/html
 # Installer les extensions PHP nécessaires
 RUN docker-php-ext-install pdo pdo_mysql
 
+# Installer Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
 # Copier les fichiers de l'application dans le conteneur
 COPY backend/ /var/www/html
 
-# Vérifier le contenu du répertoire de travail
-RUN ls -la /var/www/html
-
 # Assurer que le fichier artisan est exécutable
 RUN chmod +x /var/www/html/artisan
+
+# Installer les dépendances PHP avec Composer
+RUN composer install
 
 # Exposer le port 9200
 EXPOSE 9200
