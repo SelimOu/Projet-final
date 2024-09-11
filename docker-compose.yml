@@ -5,8 +5,6 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: laravel_app
-    volumes:
-      - ./backend:/var/www/html
     ports:
       - "9200:9200"
     depends_on:
