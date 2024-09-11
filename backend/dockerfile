@@ -1,22 +1,23 @@
-# Utiliser une image PHP avec des outils de développement courants
-FROM php:8.2-fpm
+# Utiliser une image officielle PHP avec Apache
+FROM php:8.2-apache
 
 # Définir le répertoire de travail
 WORKDIR /var/www/html
 
-# Installer les extensions PHP nécessaires et Composer
-RUN apt-get update && apt-get install -y libzip-dev unzip git && \
-    docker-php-ext-install pdo pdo_mysql zip && \
-    curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+# Installer les extensions PHP nécessaires
+RUN docker-php-ext-install pdo pdo_mysql
 
 # Copier les fichiers de l'application dans le conteneur
 COPY . /var/www/html
 
-# Installer les dépendances de Laravel
+# Installer Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Installer les dépendances PHP
 RUN composer install --no-dev --optimize-autoloader
 
-# Exposer le port 9200
-EXPOSE 9200
+# Exposer le port 80
+EXPOSE 80
 
-# Démarrer Laravel avec php artisan serve sur le port 9200
+# Démarrer Apache en mode foreground
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=9200"]
