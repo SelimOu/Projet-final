@@ -7,6 +7,9 @@ WORKDIR /var/www/html
 # Copier les fichiers de l'application dans le conteneur
 COPY . /var/www/html
 
+# Afficher le contenu du répertoire pour vérification
+RUN ls -la /var/www/html
+
 # Installer les extensions PHP nécessaires
 RUN docker-php-ext-install pdo pdo_mysql
 
