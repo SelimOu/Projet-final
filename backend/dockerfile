@@ -1,23 +1,19 @@
-# Utiliser une image officielle PHP avec Composer
-FROM php:8.2-cli
+# Utiliser une image PHP avec des outils de développement courants
+FROM php:8.2-fpm
 
 # Définir le répertoire de travail
 WORKDIR /var/www/html
 
-# Installer les extensions PHP nécessaires
-RUN docker-php-ext-install pdo pdo_mysql
-
-# Installer Composer (gestionnaire de dépendances PHP)
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# Installer les extensions PHP nécessaires et Composer
+RUN apt-get update && apt-get install -y libzip-dev unzip git && \
+    docker-php-ext-install pdo pdo_mysql zip && \
+    curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Copier les fichiers de l'application dans le conteneur
 COPY . /var/www/html
 
 # Installer les dépendances de Laravel
-RUN composer install --no-dev --optimize-autoloader || { cat /var/www/html/composer*.json; exit 1; }
-
-# Changer les permissions pour le dossier de l'application
-RUN chown -R www-data:www-data /var/www/html
+RUN composer install --no-dev --optimize-autoloader
 
 # Exposer le port 9200
 EXPOSE 9200
