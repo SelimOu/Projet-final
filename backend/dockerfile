@@ -27,5 +27,8 @@ RUN composer install --verbose
 # Exposer le port 9200
 EXPOSE 9200
 
+# Exécuter des commandes pour vérifier la configuration
+RUN php artisan config:cache && php artisan route:cache && php artisan view:cache
+
 # Démarrer Laravel avec php artisan serve sur le port 9200
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=9200"]
