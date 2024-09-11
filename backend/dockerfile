@@ -16,8 +16,11 @@ COPY backend/ /var/www/html
 # Assurer que le fichier artisan est exécutable
 RUN chmod +x /var/www/html/artisan
 
-# Installer les dépendances PHP avec Composer
-RUN composer install
+# Assurer que les permissions sont correctes
+RUN chown -R www-data:www-data /var/www/html
+
+# Installer les dépendances PHP avec Composer (avec logs détaillés)
+RUN composer install --verbose
 
 # Exposer le port 9200
 EXPOSE 9200
