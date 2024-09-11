@@ -14,7 +14,6 @@ COPY . /var/www/html
 RUN ls -la /var/www/html
 
 # Assurer que le fichier artisan est exécutable
-# (Cette commande échouera si le fichier artisan est absent, ce qui est le cas ici)
 RUN chmod +x /var/www/html/artisan
 
 # Exposer le port 9200
