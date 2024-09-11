@@ -1,0 +1,29 @@
+# Utiliser l'image Node.js officielle comme image de base
+FROM node:18 AS build
+
+# Définir le répertoire de travail
+WORKDIR /app
+
+# Copier le package.json et package-lock.json
+COPY package*.json ./
+
+# Installer les dépendances
+RUN npm install
+
+# Copier le reste de l'application
+COPY . .
+
+# Construire l'application
+RUN npm run build
+
+# Utiliser une image de serveur web pour servir les fichiers statiques
+FROM nginx:alpine
+
+# Copier les fichiers construits à partir de l'étape précédente
+COPY --from=build /app/build /usr/share/nginx/html
+
+# Exposer le port 80 pour le serveur web
+EXPOSE 80
+
+# Démarrer nginx
+CMD ["nginx", "-g", "daemon off;"]
