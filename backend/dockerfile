@@ -14,7 +14,6 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Copier les fichiers de l'application dans le conteneur
-# Assurez-vous que le répertoire backend/ est au même niveau que le Dockerfile
 COPY . /var/www/html
 
 # Ajouter une étape pour vérifier le contenu du répertoire
