@@ -29,6 +29,5 @@ RUN composer install --verbose
 EXPOSE 9200
 
 # Démarrer Laravel avec php artisan serve sur le port 9200 et exécuter les migrations
-CMD php artisan serve --host=0.0.0.0 --port=9200 & \
-    sleep 10 && \
-    php artisan migrate --force
+CMD php artisan migrate --force && \
+    php artisan serve --host=0.0.0.0 --port=${PORT:-10000}

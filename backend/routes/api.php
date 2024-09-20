@@ -11,14 +11,19 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 
-Route::get('/users', [UserController::class, 'index']);
+Route::get('/users', [UserController::class, 'index'])->middleware('auth:sanctum');
 Route::post('/users', [UserController::class, 'store']);
-Route::get('/users/{id}', [UserController::class, 'show']);
-Route::put('/users/{id}', [UserController::class, 'update']);
-Route::delete('/users/{id}', [UserController::class, 'destroy']);
+Route::get('/users/{id}', [UserController::class, 'show'])->middleware('auth:sanctum');
+Route::put('/users/{id}', [UserController::class, 'update'])->middleware('auth:sanctum');
+Route::delete('/users/{id}', [UserController::class, 'destroy'])->middleware('auth:sanctum');
 
-Route::get('/schedules', [ScheduleController::class, 'index']);
-Route::post('/schedules', [ScheduleController::class, 'store']);
-Route::get('/schedules/{id}', [ScheduleController::class, 'show']);
-Route::put('/schedules/{id}', [ScheduleController::class, 'update']);
-Route::delete('/schedules/{id}', [ScheduleController::class, 'destroy']);
+Route::get('/schedules', [ScheduleController::class, 'index'])->middleware('auth:sanctum');
+Route::post('/schedules', [ScheduleController::class, 'store'])->middleware('auth:sanctum');
+Route::get('/schedules/{id}', [ScheduleController::class, 'show'])->middleware('auth:sanctum');
+Route::put('/schedules/{id}', [ScheduleController::class, 'update'])->middleware('auth:sanctum');
+Route::delete('/schedules/{id}', [ScheduleController::class, 'destroy'])->middleware('auth:sanctum');
+
+
+Route::post('/login', [UserController::class, 'login']);
+Route::post('/logout', [UserController::class, 'logout'])->middleware('auth:sanctum');
+

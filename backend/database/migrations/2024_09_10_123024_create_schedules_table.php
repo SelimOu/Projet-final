@@ -13,17 +13,16 @@ return new class extends Migration
     {
         Schema::create('schedules', function (Blueprint $table) {
             $table->id();
-            
+            $table->unsignedBigInteger('user_id');
             $table->string('day_start');
             $table->string('day_end');
             $table->time('hour_start');
             $table->time('hour_end');
             $table->timestamps();
+        
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
-
-        Schema::table('users', function (Blueprint $table) {
-            $table->foreign('schedules_id')->references('id')->on('schedules')->onDelete('set null');
-        });
+        
     }
 
     /**
@@ -31,10 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropForeign(['schedules_id']);
-        });
-
         Schema::dropIfExists('schedules');
     }
 };

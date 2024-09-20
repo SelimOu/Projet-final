@@ -3,57 +3,60 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Schedules;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        // Récupérer tous les utilisateurs
-        $users = User::all();
+        $users = User::with('schedule')->get(); 
         return response()->json($users);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
-            'role' => 'required|string',
-            'schedules_id' => 'nullable|exists:schedules,id',
+            'role' => 'required|string|in:coach,client',
             'price' => 'nullable|numeric',
             'goal' => 'nullable|string',
+            'day_start' => 'required|string',
+            'day_end' => 'required|string',
+            'hour_start' => 'required|date_format:H:i',
+            'hour_end' => 'required|date_format:H:i',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', 
         ]);
 
+    
         $user = User::create([
             'name' => $validatedData['name'],
             'email' => $validatedData['email'],
-            'password' => Hash::make($validatedData['password']), 
+            'password' => Hash::make($validatedData['password']),
             'role' => $validatedData['role'],
-            'schedules_id' => 1,
-            'price' => $validatedData['price'],
-            'goal' => $validatedData['goal'],
+            'price' => $validatedData['price'] ?? null,
+            'goal' => $validatedData['goal'] ?? null,
         ]);
 
+        $schedule = Schedules::create([
+            'user_id' => $user->id, 
+            'day_start' => $validatedData['day_start'],
+            'day_end' => $validatedData['day_end'],
+            'hour_start' => $validatedData['hour_start'],
+            'hour_end' => $validatedData['hour_end'],
+        ]);
+    
+        $this->storeImage($user);
+    
         return response()->json($user, 201);
     }
-
-    /**
-     * Display the specified resource.
-     */
     public function show($id)
     {
-        // Récupérer un utilisateur par son ID
-        $user = User::find($id);
+        $user = User::with('schedule')->find($id);
 
         if (!$user) {
             return response()->json(['message' => 'Utilisateur non trouvé'], 404);
@@ -62,58 +65,121 @@ class UserController extends Controller
         return response()->json($user);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, $id)
-    {
-        // Valider les données entrantes
-        $validatedData = $request->validate([
-            'name' => 'sometimes|required|string|max:255',
-            'email' => 'sometimes|required|string|email|max:255|unique:users,email,' . $id,
-            'password' => 'sometimes|required|string|min:8',
-            'role' => 'sometimes|required|string',
-            'schedules_id' => 'nullable|exists:schedules,id',
-            'price' => 'nullable|numeric',
-            'goal' => 'nullable|string',
-        ]);
+{
+    $validatedData = $request->validate([
+        'name' => 'sometimes|required|string|max:255',
+        'email' => 'sometimes|required|string|email|max:255|unique:users,email,' . $id,
+        'password' => 'sometimes|required|string|min:8',
+        'role' => 'sometimes|required|string',
+        'price' => 'nullable|numeric',
+        'goal' => 'nullable|string',
+        'numero' => 'required|string|regex:/^0\d{9}$/', 
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', 
+        'day_start' => 'nullable|string',
+        'day_end' => 'nullable|string',
+        'hour_start' => 'nullable|date_format:H:i', 
+        'hour_end' => 'nullable|date_format:H:i',   
+    ]);
 
-        // Récupérer l'utilisateur à mettre à jour
-        $user = User::find($id);
+    $user = User::find($id);
 
-        if (!$user) {
-            return response()->json(['message' => 'Utilisateur non trouvé'], 404);
-        }
-
-        // Mettre à jour l'utilisateur avec les nouvelles données
-        $user->update([
-            'name' => $validatedData['name'] ?? $user->name,
-            'email' => $validatedData['email'] ?? $user->email,
-            'password' => isset($validatedData['password']) ? Hash::make($validatedData['password']) : $user->password,
-            'role' => $validatedData['role'] ?? $user->role,
-            'schedules_id' => $validatedData['schedules_id'] ?? $user->schedules_id,
-            'price' => $validatedData['price'] ?? $user->price,
-            'goal' => $validatedData['goal'] ?? $user->goal,
-        ]);
-
-        return response()->json($user);
+    if (!$user) {
+        return response()->json(['message' => 'Utilisateur non trouvé'], 404);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    $user->update([
+        'name' => $validatedData['name'] ?? $user->name,
+        'email' => $validatedData['email'] ?? $user->email,
+        'password' => isset($validatedData['password']) ? Hash::make($validatedData['password']) : $user->password,
+        'role' => $validatedData['role'] ?? $user->role,
+        'price' => $validatedData['price'] ?? $user->price,
+        'goal' => $validatedData['goal'] ?? $user->goal,
+        'numero' => $validatedData['numero'] ?? $user->numero,
+    ]);
+
+    $this->storeImage($user);
+
+    if (isset($validatedData['day_start']) || isset($validatedData['day_end']) || isset($validatedData['hour_start']) || isset($validatedData['hour_end'])) {
+        if ($user->schedule) {
+            $user->schedule->update([
+                'day_start' => $validatedData['day_start'] ?? $user->schedule->day_start,
+                'day_end' => $validatedData['day_end'] ?? $user->schedule->day_end,
+                'hour_start' => $validatedData['hour_start'] ?? $user->schedule->hour_start,
+                'hour_end' => $validatedData['hour_end'] ?? $user->schedule->hour_end,
+            ]);
+        } else {
+            $schedule = Schedules::create([
+                'user_id' => $user->id,
+                'day_start' => $validatedData['day_start'],
+                'day_end' => $validatedData['day_end'],
+                'hour_start' => $validatedData['hour_start'],
+                'hour_end' => $validatedData['hour_end'],
+            ]);
+        }
+    }
+
+    return response()->json($user->load('schedule'));
+}
+
     public function destroy($id)
-    {
-        // Récupérer l'utilisateur à supprimer
+ {
         $user = User::find($id);
-
+    
         if (!$user) {
             return response()->json(['message' => 'Utilisateur non trouvé'], 404);
         }
-
-        // Supprimer l'utilisateur
+    
+        if ($user->schedule) {
+            $user->schedule->delete();
+        }
+    
         $user->delete();
+    
+        return response()->json(['message' => 'Utilisateur et horaire supprimés avec succès']);
+  }
+    
+    public function login(Request $request)
+ {
+        $credentials = $request->only('email', 'password');
 
-        return response()->json(['message' => 'Utilisateur supprimé avec succès']);
+        if (!Auth::attempt($credentials)) {
+            return response()->json(['message' => "Les informations d'identification fournies sont incorrectes"], 401);
+        }
+
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['message' => "L'utilisateur n'est pas authentifié"], 401);
+        }
+
+        $user->tokens()->delete();
+
+        $token = $user->createToken('app_token', ['*'])->plainTextToken;
+
+        return response()->json(['user' => $user, 'token' => $token], 200);
+ }
+
+    public function logout(Request $request)
+{
+        $user = $request->user();
+
+        if (!$user) {
+            return response()->json(['message' => 'Utilisateur non authentifié'], 401);
+        }
+
+        // Supprimer le token
+        $user->currentAccessToken()->delete();
+
+        return response()->json(['message' => 'Token supprimé'], 200);
+}
+
+     function storeImage(User $user)
+{
+    if (request('image')) {
+        $user->update([
+            'image' => request('image')->store('images', 'public'),
+        ]);
     }
+}
+
 }
