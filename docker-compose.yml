@@ -15,7 +15,7 @@ services:
       - DB_USERNAME=nom_utilisateur
       - DB_PASSWORD=mot_de_passe
     volumes:
-      - ./backend:/var/www/html # Montre ton code source
+      - ./backend:/var/www/html
     networks:
       - my_network
 
@@ -58,7 +58,9 @@ services:
       dockerfile: Dockerfile
     container_name: react_app
     ports:
-      - "3000:80"
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
     depends_on:
       - app
     networks:

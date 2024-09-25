@@ -1,5 +1,5 @@
 # Utiliser l'image Node.js officielle comme image de base
-FROM node:18 AS build
+FROM node:18
 
 # Définir le répertoire de travail
 WORKDIR /app
@@ -13,17 +13,8 @@ RUN npm install
 # Copier le reste de l'application
 COPY . .
 
-# Construire l'application
-RUN npm run build
+# Exposer le port 3000 pour le serveur de développement
+EXPOSE 3000
 
-# Utiliser une image de serveur web pour servir les fichiers statiques
-FROM nginx:alpine
-
-# Copier les fichiers construits à partir de l'étape précédente
-COPY --from=build /app/build /usr/share/nginx/html
-
-# Exposer le port 80 pour le serveur web
-EXPOSE 80
-
-# Démarrer nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Démarrer l'application en mode développement
+CMD ["npm", "start"]
