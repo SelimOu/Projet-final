@@ -17,54 +17,50 @@ class UserController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
-            'role' => 'required|string|in:coach,client',
-            'price' => 'nullable|numeric',
-            'goal' => 'nullable|string',
-            'day_start' => 'required|string',
-            'day_end' => 'required|string',
-            'hour_start' => 'required|date_format:H:i',
-            'hour_end' => 'required|date_format:H:i',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', 
-        ]);
+{
+    $validatedData = $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|string|email|max:255|unique:users',
+        'password' => 'required|string|min:8',
+        'role' => 'required|string|in:coach,client',
+        'price' => 'nullable|numeric',
+        'goal' => 'nullable|string',
+        'numero' => 'required|string|regex:/^0\d{9}$/', 
+        'day_start' => 'nullable|string|in:Lundi,Mardi,Mercredi,Jeudi,Vendredi,Samedi,Dimanche',
+        'day_end' => 'nullable|string|in:Lundi,Mardi,Mercredi,Jeudi,Vendredi,Samedi,Dimanche',
+        'hour_start' => 'nullable|date_format:H:i',
+        'hour_end' => 'nullable|date_format:H:i',
+        'image' => $request->role === 'coach' ? 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048' : 'nullable',
+    ]);
 
-    
-        $user = User::create([
-            'name' => $validatedData['name'],
-            'email' => $validatedData['email'],
-            'password' => Hash::make($validatedData['password']),
-            'role' => $validatedData['role'],
-            'price' => $validatedData['price'] ?? null,
-            'goal' => $validatedData['goal'] ?? null,
-        ]);
+    $role = $validatedData['role'] === 'coach' ? 'coach' : 'client';
 
-        $schedule = Schedules::create([
-            'user_id' => $user->id, 
+    $user = User::create([
+        'name' => $validatedData['name'],
+        'email' => $validatedData['email'],
+        'password' => Hash::make($validatedData['password']),
+        'role' => $role,
+        'price' => $role === 'coach' ? $validatedData['price'] : null,
+        'goal' => $role === 'coach' ? $validatedData['goal'] : null,
+        'numero' => $validatedData['numero']
+    ]);
+
+    if ($role === 'coach') {
+        Schedules::create([
+            'user_id' => $user->id,
             'day_start' => $validatedData['day_start'],
             'day_end' => $validatedData['day_end'],
             'hour_start' => $validatedData['hour_start'],
             'hour_end' => $validatedData['hour_end'],
         ]);
-    
-        $this->storeImage($user);
-    
-        return response()->json($user, 201);
-    }
-    public function show($id)
-    {
-        $user = User::with('schedule')->find($id);
-
-        if (!$user) {
-            return response()->json(['message' => 'Utilisateur non trouvé'], 404);
-        }
-
-        return response()->json($user);
     }
 
+    $this->storeImage($user);
+
+    return response()->json($user, 201);
+}
+
+    
     public function update(Request $request, $id)
 {
     $validatedData = $request->validate([
@@ -167,19 +163,21 @@ class UserController extends Controller
             return response()->json(['message' => 'Utilisateur non authentifié'], 401);
         }
 
-        // Supprimer le token
         $user->currentAccessToken()->delete();
 
         return response()->json(['message' => 'Token supprimé'], 200);
 }
 
      function storeImage(User $user)
-{
-    if (request('image')) {
-        $user->update([
-            'image' => request('image')->store('images', 'public'),
-        ]);
-    }
-}
+     {
+         if (request()->hasFile('image')) {
+             $user->update([
+                 'image' => request()->file('image')->store('images', 'public'), 
+             ]);
+         }
+     }
+
+     
+     
 
 }

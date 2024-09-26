@@ -7,7 +7,6 @@ const HomePage = () => {
         <div className="bg-gray-100">
             <Header />
             <img className="w-full h-90" src="choisir-coach-sportif.jpg" alt="image qui représentent un coach" />
-
             <section className="bg-gray-800 text-white py-20">
                 <div className="container mx-auto px-4 text-center">
                     <h2 className="text-4xl font-bold mb-4">Connectez-vous avec les meilleurs coachs</h2>
@@ -23,14 +22,14 @@ const HomePage = () => {
 
             <section className="bg-gray-200">
                 <div className="container mx-auto px-4">
-                    <div className="flex flex-col md:flex-row">
+                    <div className="flex flex-col xl:flex-row lg:items-center">
                         <div className="md:w-1/2">
                             <h2 className="pb-20 pt-10 text-4xl">Bienvenue chez CoachFinder 63</h2>
-                            <p className="text-xl">
+                            <p className="text-xl pb-8">
                                 Chez CoachFinder 63, nous mettons en relation les habitants de Clermont-Ferrand et des environs avec les meilleurs coachs sportifs locaux. Que vous cherchiez à améliorer votre forme physique, à atteindre des objectifs spécifiques ou simplement à adopter un mode de vie plus sain, notre plateforme vous permet de trouver le coach qui correspond à vos besoins. Avec un large choix de professionnels qualifiés, vous êtes sûr de recevoir un accompagnement personnalisé et de qualité, tout en soutenant des experts de votre région. Prenez en main votre bien-être avec CoachFinder 63.
                             </p>
                         </div>
-                        <img className="w-42 md:w-1/2" src="LogoCoachFinder63.png" alt="logo" />
+                        <img className="w-80 lg:w-2/6 " src="LogoCoachFinder63.png" alt="logo" />
                     </div>
                 </div>
             </section>

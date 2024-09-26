@@ -1,26 +1,22 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
+
 
 const CoachList = () => {
   const [coaches, setCoaches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+
   useEffect(() => {
     const fetchCoaches = async () => {
       try {
-        const response = await fetch("http://localhost:9200/api/users");
-        if (!response.ok) {
-          throw new Error("Erreur lors de la récupération des données");
-        }
-        const data = await response.json();
+        const response = await axios.get("http://localhost:9200/api/users");
 
-        const filteredCoaches = data.filter(user => user.role === "coach");
-
+        const filteredCoaches = response.data.filter(user => user.role === "coach");
         const lastThreeCoaches = filteredCoaches.slice(-3);
-
         setCoaches(lastThreeCoaches);
         setLoading(false);
-
       } catch (err) {
         setError(err.message);
         setLoading(false);
@@ -30,9 +26,17 @@ const CoachList = () => {
     fetchCoaches();
   }, []);
 
+  if (loading) {
+    return <p>Chargement...</p>;
+  }
+
   if (error) {
     return <p>Erreur: {error}</p>;
   }
+
+
+
+
 
   return (
     <div>
@@ -49,7 +53,7 @@ const CoachList = () => {
                 className="w-48 h-48 object-cover rounded-full mb-4"
               />
               <h3 className="text-xl font-semibold mb-2">{coach.name}</h3>
-              <p className="text-gray-600">Prix : {coach.price} €/h</p>
+              <p className="text-gray-600">Prix : {coach.price} €</p>
               <p className="text-gray-600">Specialitée : {coach.goal}</p>
               <p className="text-gray-600">Numéro : {coach.numero}</p>
               <p className="text-gray-600">Mail : {coach.email}</p>
