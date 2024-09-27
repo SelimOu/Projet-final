@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; // Assurez-vous d'importer useNavigate
+import { useNavigate, Link } from "react-router-dom";
 
 const Header = () => {
     const [isVisible, setIsVisible] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [isLoggedIn, setIsLoggedIn] = useState(false); // État pour vérifier la connexion
-
     const navigate = useNavigate();
 
     const handleScroll = () => {
@@ -25,25 +23,16 @@ const Header = () => {
         };
     }, [lastScrollY]);
 
-    // Vérifier si l'utilisateur est connecté au démarrage
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            setIsLoggedIn(true);
-        }
-    }, []);
-
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen);
     };
 
     const handleLogout = () => {
-        // Supprimer le token
         localStorage.removeItem('token');
-        setIsLoggedIn(false);
-        alert('Déconnexion réussie');
-        navigate('/'); // Redirige vers la page d'accueil
+        navigate('/');
     };
+
+    const isLoggedIn = !!localStorage.getItem('token');
 
     return (
         <div className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out ${isVisible ? 'bg-white shadow-lg' : 'bg-transparent opacity-0 pointer-events-none'}`}>
@@ -61,26 +50,29 @@ const Header = () => {
                     <nav className="hidden md:flex space-x-6">
                         <ul className="flex flex-row space-x-6">
                             <li>
-                                <a href="/" className="text-gray-700 hover:text-blue-900">Home</a>
+                                <Link to="/" className="text-gray-700 hover:text-blue-900">Home</Link>
                             </li>
                             <li>
-                                <a href="/about" className="text-gray-700 hover:text-blue-900">About</a>
+                                <Link to="/about" className="text-gray-700 hover:text-blue-900">About</Link>
                             </li>
                             <li>
-                                <a href="/contact" className="text-gray-700 hover:text-blue-900">Contact</a>
+                                <Link to="/contact" className="text-gray-700 hover:text-blue-900">Contact</Link>
                             </li>
                             {isLoggedIn ? (
                                 <>
                                     <li>
-                                        <a href="/dashboard" className="text-gray-700 hover:text-blue-900">Dashboard</a>
+                                        <Link to="/dashboard" className="text-gray-700 hover:text-blue-900">Tous les coachs</Link>
                                     </li>
                                     <li>
-                                        <button onClick={handleLogout} className="text-gray-700 hover:text-blue-900 focus:outline-none">Se déconnecter</button>
+                                        <Link to="/profile" className="text-gray-700 hover:text-blue-900"> Modifier mon Profil</Link>
+                                    </li>
+                                    <li>
+                                        <button onClick={handleLogout} className="text-gray-700 hover:text-blue-900">Se déconnecter</button>
                                     </li>
                                 </>
                             ) : (
                                 <li>
-                                    <a href="/login" className="text-gray-700 hover:text-blue-900">Login</a>
+                                    <Link to="/login" className="text-gray-700 hover:text-blue-900">Login</Link>
                                 </li>
                             )}
                         </ul>
@@ -91,26 +83,26 @@ const Header = () => {
                     <div className="md:hidden bg-white shadow-md mt-2">
                         <ul className="flex flex-col space-y-2 px-4 py-2">
                             <li>
-                                <a href="/" className="text-gray-700 hover:text-blue-500">Home</a>
+                                <Link to="/" className="text-gray-700 hover:text-blue-500">Home</Link>
                             </li>
                             <li>
-                                <a href="/about" className="text-gray-700 hover:text-blue-500">About</a>
+                                <Link to="/about" className="text-gray-700 hover:text-blue-500">About</Link>
                             </li>
                             <li>
-                                <a href="/contact" className="text-gray-700 hover:text-blue-500">Contact</a>
+                                <Link to="/contact" className="text-gray-700 hover:text-blue-500">Contact</Link>
                             </li>
                             {isLoggedIn ? (
                                 <>
                                     <li>
-                                        <a href="/dashboard" className="text-gray-700 hover:text-blue-500">Dashboard</a>
+                                        <Link to="/profile" className="text-gray-700 hover:text-blue-500">Profil</Link>
                                     </li>
                                     <li>
-                                        <button onClick={handleLogout} className="text-gray-700 hover:text-blue-500 focus:outline-none">Se déconnecter</button>
+                                        <button onClick={handleLogout} className="text-gray-700 hover:text-blue-500">Se déconnecter</button>
                                     </li>
                                 </>
                             ) : (
                                 <li>
-                                    <a href="/login" className="text-gray-700 hover:text-blue-500">Login</a>
+                                    <Link to="/login" className="text-gray-700 hover:text-blue-500">Login</Link>
                                 </li>
                             )}
                         </ul>

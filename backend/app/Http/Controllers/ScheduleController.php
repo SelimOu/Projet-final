@@ -64,4 +64,11 @@ class ScheduleController extends Controller
 
         return response()->json(['message' => 'Schedule deleted successfully!']);
     }
+    public function show($id)
+    {
+        $schedules = Schedules::where('user_id', $id)->get();
+
+        return response()->json($schedules);
+    }
 }
+
