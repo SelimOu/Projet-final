@@ -23,6 +23,9 @@ Route::get('/schedules/{id}', [ScheduleController::class, 'show'])->middleware('
 Route::put('/schedules/{id}', [ScheduleController::class, 'update'])->middleware('auth:sanctum');
 Route::delete('/schedules/{id}', [ScheduleController::class, 'destroy'])->middleware('auth:sanctum');
 
+Route::post('/users/{id}/goals', [UserController::class, 'updateGoals']);
+Route::get('/users/{id}/goals', [UserController::class, 'getUserGoals']);
+
 
 Route::post('/login', [UserController::class, 'login']);
 Route::post('/logout', [UserController::class, 'logout'])->middleware('auth:sanctum');

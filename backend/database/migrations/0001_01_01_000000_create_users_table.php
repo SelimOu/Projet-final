@@ -20,7 +20,6 @@ return new class extends Migration
             $table->enum('role',['coach','client']);
             $table->float('price')->nullable();
             $table->string('numero')->nullable(); 
-            $table->enum('goal',['musculation','fitness','nutrition','running'])->nullable();
             $table->string('image')->nullable();
             $table->rememberToken();
             $table->foreignId('current_team_id')->nullable();

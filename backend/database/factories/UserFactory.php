@@ -33,7 +33,6 @@ class UserFactory extends Factory
             'password' => Hash::make('password'), 
             'role' => $this->faker->randomElement(['coach', 'client']),
             'price' => $this->faker->randomFloat(2, 10, 100), 
-            'goal' => $this->faker->randomElement(['mincir','musculation','endurence']),
             'numero' => '0' . $this->faker->numberBetween(100000000, 999999999),
             'image' => $this->faker->imageUrl(640, 480, 'people', true),  
             'remember_token' => Str::random(10),

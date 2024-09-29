@@ -20,7 +20,6 @@ class User extends Authenticatable
         'password',
         'role',
         'price',
-        'goal',
         'numero',
         'image'
     ];
@@ -47,5 +46,10 @@ class User extends Authenticatable
     public function schedule()
     {
         return $this->hasOne(Schedules::class);
+    }
+
+    public function goals()
+    {
+        return $this->belongsToMany(Goal::class, 'goal_user');
     }
 }

@@ -10,8 +10,8 @@ const Profile = () => {
         password: '',
         numero: '',
         price: '',
-        goal: '',
         image: null,
+        goals: [] // Ajouté pour stocker les objectifs sélectionnés
     });
     const [schedules, setSchedules] = useState({
         day_start: '',
@@ -19,11 +19,21 @@ const Profile = () => {
         hour_start: '',
         hour_end: ''
     });
+    const [previousImage, setPreviousImage] = useState(null);
     const [isCoach, setIsCoach] = useState(false);
     const [userId, setUserId] = useState(null);
     const [errorMessage, setErrorMessage] = useState('');
     const [numeroError, setNumeroError] = useState('');
+    const [goalsList, setGoalsList] = useState([]); // Initialisation de la liste des objectifs
+    const [goalsError, setGoalsError] = useState('');
     const navigate = useNavigate();
+
+    const goalsData = [
+        { id: 1, name: 'Musculation' },
+        { id: 2, name: 'Fitness' },
+        { id: 3, name: 'Nutrition' },
+        { id: 4, name: 'Running' },
+    ];
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -56,14 +66,18 @@ const Profile = () => {
                     password: '',
                     numero: user.numero || '',
                     price: user.price || '',
-                    goal: user.goal || '',
                     image: null,
+                    goals: user.goals.map(goal => goal.id) // Charger les objectifs de l'utilisateur
                 });
+                setPreviousImage(user.image);
                 setIsCoach(user.role === 'coach');
 
                 if (user.role === 'coach') {
                     await fetchSchedules(storedUserId, token);
                 }
+
+                // Charger la liste des objectifs
+                setGoalsList(goalsData); // Utilisation de la méthode des objectifs définie
 
             } catch (error) {
                 console.error('Erreur lors de la récupération des données utilisateur:', error);
@@ -106,44 +120,58 @@ const Profile = () => {
         return numeroRegex.test(numero);
     };
 
+    const formatTime = (timeString) => {
+        if (timeString && timeString.length === 8) {
+            return timeString.substring(0, 5); // Reformate 'HH:mm:ss' en 'HH:mm'
+        }
+        return timeString;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        let isValid = true; // Ajout de la variable pour suivre la validité du formulaire
+
         if (!formData.numero || !validateNumero(formData.numero)) {
             setNumeroError("Le numéro de téléphone doit contenir exactement 10 chiffres et commencer par 0.");
-            return;
+            isValid = false; // Si le numéro n'est pas valide, on arrête la validation
         } else {
             setNumeroError('');
         }
 
         if (formData.password && formData.password.length < 8) {
-            setErrorMessage('Le champ mot de passe doit contenir au moins 8 caractères.');
-            return;
-        } else {
-            setErrorMessage('');
+            setErrorMessage('Le mot de passe doit contenir au moins 8 caractères.');
+            isValid = false; // Si le mot de passe est trop court, on arrête la validation
         }
 
-        const dataToSend = {
-            role: isCoach ? 'coach' : 'client',
-            name: formData.name,
-            email: formData.email,
-            numero: formData.numero,
-            goal: formData.goal,
-            price: formData.price,
-            image: formData.image
-        };
+        if (!isValid) {
+            return; // Si le formulaire est invalide, on arrête l'exécution ici
+        }
+
+        const dataToSend = new FormData(); // Utilisation de FormData pour l'envoi de fichiers
+        dataToSend.append('role', isCoach ? 'coach' : 'client');
+        dataToSend.append('name', formData.name);
+        dataToSend.append('email', formData.email);
+        dataToSend.append('numero', formData.numero);
+        dataToSend.append('price', formData.price);
 
         if (formData.password) {
-            dataToSend.password = formData.password;
+            dataToSend.append('password', formData.password);
         }
 
         if (isCoach) {
-            dataToSend.schedules = {
-                day_start: schedules.day_start,
-                day_end: schedules.day_end,
-                hour_start: schedules.hour_start,
-                hour_end: schedules.hour_end,
-            };
+            dataToSend.append('day_start', schedules.day_start);
+            dataToSend.append('day_end', schedules.day_end);
+            dataToSend.append('hour_start', formatTime(schedules.hour_start));
+            dataToSend.append('hour_end', formatTime(schedules.hour_end));
+        }
+
+        formData.goals.forEach(goal => {
+            dataToSend.append('goals[]', goal);
+        });
+
+        if (formData.image) {
+            dataToSend.append('image', formData.image);
         }
 
         try {
@@ -151,15 +179,17 @@ const Profile = () => {
             const response = await axios.post(`http://localhost:9200/api/users/${userId}?_method=PUT`, dataToSend, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
-                    "Content-Type": 'multipart/form-data'
+                    'Content-Type': 'multipart/form-data',
                 },
             });
+
 
             alert('Profil mis à jour avec succès !');
             navigate('/dashboard');
 
             console.log('Réponse du serveur:', response.data);
             setErrorMessage('');
+
         } catch (error) {
             console.error('Mise à jour du profil échouée', error);
             if (error.response && error.response.data && error.response.data.message) {
@@ -180,166 +210,203 @@ const Profile = () => {
         setSchedules({ ...schedules, [name]: value });
     };
 
+    const handleGoalChange = (goalId) => {
+        setFormData((prevState) => {
+            const { goals } = prevState;
+            if (goals.includes(goalId)) {
+                return { ...prevState, goals: goals.filter((id) => id !== goalId) };
+            } else {
+                return { ...prevState, goals: [...goals, goalId] };
+            }
+        });
+
+        setGoalsError('');
+    };
+
+    const daysOfWeek = [
+        { value: 'Lundi', label: 'Lundi' },
+        { value: 'Mardi', label: 'Mardi' },
+        { value: 'Mercredi', label: 'Mercredi' },
+        { value: 'Jeudi', label: 'Jeudi' },
+        { value: 'Vendredi', label: 'Vendredi' },
+        { value: 'Samedi', label: 'Samedi' },
+        { value: 'Dimanche', label: 'Dimanche' },
+    ];
+
     return (
-        <>
+        <div style={{ backgroundImage: `url('/imageprofile.jpg')` }}>
             <Header />
 
-            <div className="flex items-center justify-center min-h-screen bg-gray-100">
-                <form
-                    onSubmit={handleSubmit}
-                    className="w-full max-w-md bg-white shadow-md rounded-lg p-8 m-14"
-                >
-                    <h2 className="text-2xl font-bold mb-6 text-center">Profil</h2>
-
+            <div className="flex items-center justify-center min-h-screen mt-20 mb-22">
+                <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow-md w-full max-w-md mt-20 mb-20 ">
                     {errorMessage && (
-                        <div className="mb-4 text-red-500">
-                            {errorMessage}
-                        </div>
+                        <div className="bg-red-200 text-red-600 p-4 mb-4">{errorMessage}</div>
                     )}
-
                     {numeroError && (
-                        <div className="mb-4 text-red-500">
-                            {numeroError}
-                        </div>
+                        <div className="text-red-600 mb-4">{numeroError}</div>
                     )}
+                    <h2 className="text-2xl mb-4">{isCoach ? 'Profil du Coach' : 'Profil du Client'}</h2>
 
-                    <div className="mb-4">
-                        <label className="block text-gray-700" htmlFor="name">Nom :</label>
+                    <label className="block mb-2">
+                        Nom:
                         <input
                             type="text"
                             name="name"
                             value={formData.name}
                             onChange={handleChange}
+                            className="border border-gray-300 p-2 rounded w-full"
                             required
-                            className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-600 focus:outline-none"
                         />
-                    </div>
-                    <div className="mb-4">
-                        <label className="block text-gray-700" htmlFor="email">Email :</label>
+                    </label>
+
+                    <label className="block mb-2">
+                        Email:
                         <input
                             type="email"
                             name="email"
                             value={formData.email}
                             onChange={handleChange}
+                            className="border border-gray-300 p-2 rounded w-full"
                             required
-                            className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-600 focus:outline-none"
                         />
-                    </div>
-                    <div className="mb-4">
-                        <label className="block text-gray-700" htmlFor="password">Mot de passe :</label>
+                    </label>
+
+                    <label className="block mb-2">
+                        Mot de passe:
                         <input
                             type="password"
                             name="password"
                             value={formData.password}
                             onChange={handleChange}
-                            placeholder="Laissez vide si vous ne voulez pas changer le mot de passe"
-                            className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-600 focus:outline-none"
+                            className="border border-gray-300 p-2 rounded w-full"
                         />
-                    </div>
-                    <div className="mb-4">
-                        <label className="block text-gray-700" htmlFor="numero">Numéro de téléphone :</label>
+                    </label>
+
+                    <label className="block mb-2">
+                        Numéro de téléphone:
                         <input
                             type="text"
                             name="numero"
                             value={formData.numero}
                             onChange={handleChange}
-                            className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-600 focus:outline-none"
+                            className="border border-gray-300 p-2 rounded w-full"
+                            required
                         />
-                    </div>
+                    </label>
+
+
+
+                    <label className="block mb-2">
+                        Image:
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => setFormData({ ...formData, image: e.target.files[0] })}
+                            className="border border-gray-300 p-2 rounded w-full"
+                        />
+                    </label>
 
                     {isCoach && (
                         <>
-                            <div className="mb-4">
-                                <label className="block text-gray-700" htmlFor="goal">Spécialité :</label>
-                                <select
-                                    name="goal"
-                                    value={formData.goal}
-                                    onChange={handleChange}
-                                    required
-                                    className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-600 focus:outline-none"
-                                >
-                                    <option value="">Sélectionnez une spécialité</option>
-                                    <option value="musculation">Musculation</option>
-                                    <option value="fitness">Fitness</option>
-                                    <option value="nutrition">Nutrition</option>
-                                    <option value="running">Running</option>
-                                </select>
-                            </div>
-                            <div className="mb-4">
-                                <label className="block text-gray-700" htmlFor="price">Prix par séance :</label>
+                            <label className="block mb-2">
+                                Tarif /h
                                 <input
                                     type="number"
                                     name="price"
                                     value={formData.price}
                                     onChange={handleChange}
-                                    className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-600 focus:outline-none"
+                                    required
+                                    className="border border-gray-300 p-2 rounded w-full"
                                 />
-                            </div>
+                            </label>
+                            <h3 className="text-xl mt-4">Horaires</h3>
+
                             <div className="mb-4">
                                 <label className="block text-gray-700" htmlFor="day_start">Jour de début :</label>
-                                <input
-                                    type="text"
+                                <select
                                     name="day_start"
                                     value={schedules.day_start}
                                     onChange={handleScheduleChange}
                                     className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-600 focus:outline-none"
-                                />
+                                >
+                                    <option value="">Sélectionnez un jour</option>
+                                    {daysOfWeek.map((day) => (
+                                        <option key={day.value} value={day.value}>
+                                            {day.label}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
                             <div className="mb-4">
                                 <label className="block text-gray-700" htmlFor="day_end">Jour de fin :</label>
-                                <input
-                                    type="text"
+                                <select
                                     name="day_end"
                                     value={schedules.day_end}
                                     onChange={handleScheduleChange}
                                     className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-600 focus:outline-none"
-                                />
+                                >
+                                    <option value="">Sélectionnez un jour</option>
+                                    {daysOfWeek.map((day) => (
+                                        <option key={day.value} value={day.value}>
+                                            {day.label}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
-                            <div className="mb-4">
-                                <label className="block text-gray-700" htmlFor="hour_start">Heure de début :</label>
+                            <label className="block mb-2">
+                                Heure de début:
                                 <input
-                                    type="text"
+                                    type="time"
                                     name="hour_start"
                                     value={schedules.hour_start}
                                     onChange={handleScheduleChange}
-                                    className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-600 focus:outline-none"
+                                    className="border border-gray-300 p-2 rounded w-full"
                                 />
-                            </div>
-                            <div className="mb-4">
-                                <label className="block text-gray-700" htmlFor="hour_end">Heure de fin :</label>
+                            </label>
+
+                            <label className="block mb-2">
+                                Heure de fin:
                                 <input
-                                    type="text"
+                                    type="time"
                                     name="hour_end"
                                     value={schedules.hour_end}
                                     onChange={handleScheduleChange}
-                                    className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-600 focus:outline-none"
+                                    className="border border-gray-300 p-2 rounded w-full"
                                 />
-                            </div>
+                            </label>
                         </>
                     )}
 
-                    <div className="mb-4">
-                        <label className="block text-gray-700" htmlFor="image">Image de profil :</label>
-                        <input
-                            type="file"
-                            name="image"
-                            onChange={(e) => setFormData({ ...formData, image: e.target.files[0] })}
-                            className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-600 focus:outline-none"
-                        />
-                    </div>
+                    <h3 className="text-xl mt-4">Objectifs</h3>
+                    {goalsList.map((goal) => (
+                        <label key={goal.id} className="block mb-2">
+                            <input
+                                type="checkbox"
+                                checked={formData.goals.includes(goal.id)}
+                                onChange={() => handleGoalChange(goal.id)}
+                            />
+                            {goal.name}
+                        </label>
+                    ))}
+                    {goalsError && (
+                        <div className="text-red-600 mb-4">{goalsError}</div>
+                    )}
 
-
-                    <div className="flex justify-center">
-                        <button
-                            type="submit"
-                            className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700"
-                        >
-                            Enregistrer
-                        </button>
-                    </div>
+                    <button type="submit" className="bg-blue-500 text-white p-2 rounded">
+                        Enregistrer
+                    </button>
                 </form>
-            </div>
-        </>
+            </div >
+
+            <footer className="bg-gray-800 text-gray-400 py-8">
+                <div className="container mx-auto px-4 text-center">
+                    <p>&copy; 2024 CoachFinder 63. Tous droits réservés.</p>
+                </div>
+            </footer>
+        </div>
+
+
+
     );
 };
 

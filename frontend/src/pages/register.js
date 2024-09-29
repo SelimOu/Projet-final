@@ -15,13 +15,32 @@ const Register = () => {
         day_end: '',
         hour_start: '',
         hour_end: '',
-        goal: '',
+        goals: [],
         image: null,
     });
+
+    const [errorMessage, setErrorMessage] = useState('');
+    const [numeroError, setNumeroError] = useState('');
+    const [emailError, setEmailError] = useState('');
+    const [goalsError, setGoalsError] = useState('');
+
+    const goalsList = [
+        { id: 1, name: 'Musculation' },
+        { id: 2, name: 'Fitness' },
+        { id: 3, name: 'Nutrition' },
+        { id: 4, name: 'Running' },
+    ];
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
+
+        if (name === 'email') {
+            setEmailError('');
+        }
+        if (name === 'numero') {
+            setNumeroError('');
+        }
     };
 
     const handleFileChange = (e) => {
@@ -30,27 +49,109 @@ const Register = () => {
 
         if (file && validTypes.includes(file.type)) {
             setFormData({ ...formData, image: file });
+            setErrorMessage('');
         } else {
             alert('Veuillez sélectionner une image valide (jpeg, png, jpg, gif).');
+            setFormData({ ...formData, image: null });
         }
+    };
+
+    const handleGoalChange = (goalId) => {
+        setFormData((prevState) => {
+            const { goals } = prevState;
+            if (goals.includes(goalId)) {
+                return { ...prevState, goals: goals.filter((id) => id !== goalId) };
+            } else {
+                return { ...prevState, goals: [...goals, goalId] };
+            }
+        });
+
+        setGoalsError('');
+    };
+
+    const validateForm = () => {
+        let isValid = true;
+        setErrorMessage('');
+        setNumeroError('');
+        setEmailError('');
+        setGoalsError('');
+
+        const phoneRegex = /^0[0-9]{9}$/;
+        if (!phoneRegex.test(formData.numero)) {
+            setNumeroError('Numéro de téléphone invalide. Doit commencer par 0 et contenir 10 chiffres.');
+            isValid = false;
+        }
+
+        if (formData.goals.length === 0) {
+            setGoalsError('Veuillez sélectionner au moins un objectif.');
+            isValid = false;
+        }
+
+        if (formData.password.length < 8) {
+            setErrorMessage('Le mot de passe doit contenir au moins 8 caractères.');
+            isValid = false;
+        }
+
+        if (!formData.image) {
+            setErrorMessage('Veuillez télécharger une image.');
+            isValid = false;
+        }
+
+        if (isCoach) {
+            if (!formData.price) {
+                setErrorMessage('Veuillez indiquer votre tarif.');
+                isValid = false;
+            }
+            if (!formData.day_start || !formData.day_end) {
+                setErrorMessage('Veuillez sélectionner vos jours de disponibilité.');
+                isValid = false;
+            }
+            if (!formData.hour_start || !formData.hour_end) {
+                setErrorMessage('Veuillez indiquer vos heures de disponibilité.');
+                isValid = false;
+            }
+        }
+
+        return isValid;
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const data = new FormData();
+        if (!validateForm()) return;
 
+        const data = new FormData();
         const role = isCoach ? 'coach' : 'client';
         data.append('role', role);
 
         Object.keys(formData).forEach((key) => {
-            data.append(key, formData[key]);
+            if (key !== 'goals') {
+                data.append(key, formData[key]);
+            }
+        });
+
+        formData.goals.forEach(goal => {
+            data.append('goals[]', goal);
         });
 
         try {
-            await axios.post('http://localhost:9200/api/users', data);
+            await axios.post('http://localhost:9200/api/users', data, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+            alert('Inscription réussie ! Vous pouvez maintenant vous connecter.');
             navigate('/login');
         } catch (error) {
             console.error('Inscription échouée', error);
+            if (error.response && error.response.data && error.response.data.message) {
+                if (error.response.data.message === "L'email est déjà utilisé") {
+                    setEmailError("L'email est déjà utilisé.");
+                } else {
+                    setErrorMessage(error.response.data.message);
+                }
+            } else {
+                setErrorMessage('Inscription échouée. Veuillez réessayer.');
+            }
         }
     };
 
@@ -62,6 +163,12 @@ const Register = () => {
                 className="w-full max-w-md bg-white shadow-md rounded-lg p-8 m-14"
             >
                 <h2 className="text-2xl font-bold mb-6 text-center">Inscription</h2>
+
+                {errorMessage && <div className="text-red-600 mb-4">{errorMessage}</div>}
+                {numeroError && <div className="text-red-600 mb-4">{numeroError}</div>}
+                {emailError && <div className="text-red-600 mb-4">{emailError}</div>}
+                {goalsError && <div className="text-red-600 mb-4">{goalsError}</div>}
+
                 <div className="mb-4 flex justify-around">
                     <button
                         type="button"
@@ -78,6 +185,7 @@ const Register = () => {
                         Vous êtes coach ?
                     </button>
                 </div>
+
                 <div className="mb-4">
                     <label className="block text-gray-700" htmlFor="name">Nom :</label>
                     <input
@@ -123,24 +231,37 @@ const Register = () => {
                     />
                 </div>
 
+                <div className="mb-4">
+                    <label className="block text-gray-700" htmlFor="image">Image de profil :</label>
+                    <input
+                        type="file"
+                        name="image"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        required
+                        className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-600 focus:outline-none"
+                    />
+                </div>
+
+                <div className="mb-4">
+                    <label className="block text-gray-700">Objectifs :</label>
+                    {goalsList.map((goal) => (
+                        <div key={goal.id}>
+                            <label className="inline-flex items-center">
+                                <input
+                                    type="checkbox"
+                                    checked={formData.goals.includes(goal.id)}
+                                    onChange={() => handleGoalChange(goal.id)}
+                                    className="form-checkbox"
+                                />
+                                <span className="ml-2">{goal.name}</span>
+                            </label>
+                        </div>
+                    ))}
+                </div>
+
                 {isCoach && (
                     <>
-                        <div className="mb-4">
-                            <label className="block text-gray-700" htmlFor="goal">Spécialité :</label>
-                            <select
-                                name="goal"
-                                value={formData.goal}
-                                onChange={handleChange}
-                                required
-                                className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-600 focus:outline-none"
-                            >
-                                <option value="">Sélectionnez une spécialité</option>
-                                <option value="musculation">Musculation</option>
-                                <option value="fitness">Fitness</option>
-                                <option value="nutrition">Nutrition</option>
-                                <option value="running">Running</option>
-                            </select>
-                        </div>
                         <div className="mb-4">
                             <label className="block text-gray-700" htmlFor="price">Tarif /h :</label>
                             <input
@@ -148,6 +269,7 @@ const Register = () => {
                                 name="price"
                                 value={formData.price}
                                 onChange={handleChange}
+                                required
                                 className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-600 focus:outline-none"
                             />
                         </div>
@@ -157,6 +279,7 @@ const Register = () => {
                                 name="day_start"
                                 value={formData.day_start}
                                 onChange={handleChange}
+                                required
                                 className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-600 focus:outline-none"
                             >
                                 <option value="">Sélectionnez un jour</option>
@@ -175,6 +298,7 @@ const Register = () => {
                                 name="day_end"
                                 value={formData.day_end}
                                 onChange={handleChange}
+                                required
                                 className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-600 focus:outline-none"
                             >
                                 <option value="">Sélectionnez un jour</option>
@@ -194,6 +318,7 @@ const Register = () => {
                                 name="hour_start"
                                 value={formData.hour_start}
                                 onChange={handleChange}
+                                required
                                 className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-600 focus:outline-none"
                             />
                         </div>
@@ -204,14 +329,6 @@ const Register = () => {
                                 name="hour_end"
                                 value={formData.hour_end}
                                 onChange={handleChange}
-                                className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-600 focus:outline-none"
-                            />
-                        </div>
-                        <div className="mb-4">
-                            <label className="block text-gray-700" htmlFor="image">Photo de profil :</label>
-                            <input
-                                type="file"
-                                onChange={handleFileChange}
                                 required
                                 className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-600 focus:outline-none"
                             />

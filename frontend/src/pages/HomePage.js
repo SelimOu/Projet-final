@@ -34,7 +34,6 @@ const HomePage = () => {
                 </div>
             </section>
 
-            {/* CTA Section */}
             <section className="bg-gray-800 text-white py-20">
                 <div className="container mx-auto px-4 text-center">
                     <h3 className="text-3xl font-bold mb-2">Vous êtes coach ?</h3>
@@ -51,7 +50,6 @@ const HomePage = () => {
                 <CoachList />
             </section>
 
-            {/* Footer */}
             <footer className="bg-gray-800 text-gray-400 py-8">
                 <div className="container mx-auto px-4 text-center">
                     <p>&copy; 2024 CoachFinder 63. Tous droits réservés.</p>
