@@ -12,62 +12,66 @@ class UserController extends Controller
 {
     public function index()
     {
+        // Inclure city dans la récupération des utilisateurs
         $users = User::with('schedule', 'goals')->get(); 
         return response()->json($users);
     }
 
     public function store(Request $request)
-{
-    if (User::where('email', $request->email)->exists()) {
-        return response()->json(['message' => 'L\'email est déjà utilisé'], 400);
-    }
+    {
+        if (User::where('email', $request->email)->exists()) {
+            return response()->json(['message' => 'L\'email est déjà utilisé'], 400);
+        }
 
-    $validatedData = $request->validate([
-        'name' => 'required|string|max:255',
-        'email' => 'required|string|email|max:255|unique:users',
-        'password' => 'required|string|min:8',
-        'role' => 'required|string|in:coach,client',
-        'goals' => 'nullable|array',  
-        'goals.*' => 'exists:goals,id', 
-        'numero' => 'required|string|regex:/^0\d{9}$/',
-        'price' => 'nullable|numeric', 
-        'day_start' => 'nullable|string|in:Lundi,Mardi,Mercredi,Jeudi,Vendredi,Samedi,Dimanche',
-        'day_end' => 'nullable|string|in:Lundi,Mardi,Mercredi,Jeudi,Vendredi,Samedi,Dimanche',
-        'hour_start' => 'nullable|date_format:H:i',
-        'hour_end' => 'nullable|date_format:H:i',
-    ]);
-
-    $user = User::create([
-        'name' => $validatedData['name'],
-        'email' => $validatedData['email'],
-        'password' => Hash::make($validatedData['password']),
-        'role' => $validatedData['role'],
-        'numero' => $validatedData['numero'],
-        'price' => $validatedData['price'] ?? null, 
-    ]);
-
-    if ($user->role === 'coach') {
-        Schedules::create([
-            'user_id' => $user->id,
-            'day_start' => $validatedData['day_start'],
-            'day_end' => $validatedData['day_end'],
-            'hour_start' => $validatedData['hour_start'],
-            'hour_end' => $validatedData['hour_end'],
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8',
+            'role' => 'required|string|in:coach,client',
+            'goals' => 'nullable|array',  
+            'goals.*' => 'exists:goals,id', 
+            'numero' => 'required|string|regex:/^0\d{9}$/',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'price' => 'nullable|numeric', 
+            'city' => 'nullable|string|max:255', // Ajout de la validation pour city
+            'day_start' => 'nullable|string|in:Lundi,Mardi,Mercredi,Jeudi,Vendredi,Samedi,Dimanche',
+            'day_end' => 'nullable|string|in:Lundi,Mardi,Mercredi,Jeudi,Vendredi,Samedi,Dimanche',
+            'hour_start' => 'nullable|date_format:H:i',
+            'hour_end' => 'nullable|date_format:H:i',
         ]);
+
+        $user = User::create([
+            'name' => $validatedData['name'],
+            'email' => $validatedData['email'],
+            'password' => Hash::make($validatedData['password']),
+            'role' => $validatedData['role'],
+            'numero' => $validatedData['numero'],
+            'price' => $validatedData['price'] ?? null, 
+            'city' => $validatedData['city'] ?? null, // Ajout de city lors de la création
+        ]);
+
+        if ($user->role === 'coach') {
+            Schedules::create([
+                'user_id' => $user->id,
+                'day_start' => $validatedData['day_start'],
+                'day_end' => $validatedData['day_end'],
+                'hour_start' => $validatedData['hour_start'],
+                'hour_end' => $validatedData['hour_end'],
+            ]);
+        }
+
+        if (!empty($validatedData['goals'])) {
+            $user->goals()->attach($validatedData['goals']);
+        }
+        $this->storeImage($user);
+
+        return response()->json($user->load('goals'), 201);
     }
 
-    if (!empty($validatedData['goals'])) {
-        $user->goals()->attach($validatedData['goals']);
-    }
-
-    return response()->json($user->load('goals'), 201);
-}
-
-    
     public function show($id)
     {
         $user = User::with('schedule', 'goals')->findOrFail($id);
-        return response()->json($user);
+        return response()->json($user); // city sera inclus automatiquement
     }
 
     public function update(Request $request, $id)
@@ -77,7 +81,7 @@ class UserController extends Controller
         if ($request->email !== $user->email && User::where('email', $request->email)->exists()) {
             return response()->json(['message' => 'L\'email est déjà utilisé'], 400);
         }
-    
+
         $validatedData = $request->validate([
             'name' => 'sometimes|required|string|max:255',
             'email' => 'sometimes|required|string|email|max:255|unique:users,email,' . $id,
@@ -88,6 +92,7 @@ class UserController extends Controller
             'goals.*' => 'exists:goals,id',
             'numero' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'city' => 'nullable|string|max:255', // Validation pour city
             'day_start' => 'nullable|string|in:Lundi,Mardi,Mercredi,Jeudi,Vendredi,Samedi,Dimanche',
             'day_end' => 'nullable|string|in:Lundi,Mardi,Mercredi,Jeudi,Vendredi,Samedi,Dimanche',
             'hour_start' => 'nullable|date_format:H:i',
@@ -101,6 +106,7 @@ class UserController extends Controller
             'role' => $validatedData['role'] ?? $user->role,
             'price' => $validatedData['price'] ?? $user->price,
             'numero' => $validatedData['numero'] ?? $user->numero,
+            'city' => $validatedData['city'] ?? $user->city, // Mettre à jour city
         ]));
     
         if ($user->role === 'coach') {

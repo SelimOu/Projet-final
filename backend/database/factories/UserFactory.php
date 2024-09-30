@@ -3,29 +3,51 @@
 namespace Database\Factories;
 
 use App\Models\User;
+use App\Models\Goal; // Assurez-vous d'importer le modèle Goal
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Closure;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
- */
 class UserFactory extends Factory
 {
-    /**
-     * The name of the factory's corresponding model.
-     *
-     * @var string
-     */
     protected $model = User::class;
 
-    /**
-     * Define the model's default state.
-     *
-     * @return array
-     */
     public function definition()
     {
+        $images = [
+            '1TLkGbAsSltQQyLtQjF4lGCvwlfdfFUxYfDfrFqp.jpg',
+            'zzsO1IgFZ2149sdVljYwq9mAeuwhyXeeC2DFL21T.jpg',
+            'DuDDA2BccEj8cRL6gq4i10NNA9zzugg6ovJiqPMQ.jpg',
+            'jAoYPHbDaR9ZgAyJwxay2KpsYali9tWBljz8i6H9.jpg',
+            'jz2yTDi88OsdwGlmCAk2xdYBXaKa46l1eQYqNZH8.jpg'
+        ];
+
+        $cities = [
+            'Paris',
+            'Marseille',
+            'Lyon',
+            'Toulouse',
+            'Nice',
+            'Nantes',
+            'Strasbourg',
+            'Montpellier',
+            'Bordeaux',
+            'Lille',
+            'Rennes',
+            'Reims',
+            'Saint-Étienne',
+            'Le Havre',
+            'Grenoble',
+            'Dijon',
+            'Nîmes',
+            'Aix-en-Provence',
+            'Saint-Denis',
+            'Angers',
+            'Villeurbanne',
+            'Clermont-Ferrand'
+        ];
+
         return [
             'name' => $this->faker->name,
             'email' => $this->faker->unique()->safeEmail,
@@ -34,16 +56,22 @@ class UserFactory extends Factory
             'role' => $this->faker->randomElement(['coach', 'client']),
             'price' => $this->faker->randomFloat(2, 10, 100), 
             'numero' => '0' . $this->faker->numberBetween(100000000, 999999999),
-            'image' => $this->faker->imageUrl(640, 480, 'people', true),  
+            'image' => 'images/' . $images[array_rand($images)],
+            'city' => $this->faker->randomElement($cities), 
             'remember_token' => Str::random(10),
         ];
     }
 
-    /**
-     * Indicate that the user is unverified.
-     *
-     * @return \Illuminate\Database\Eloquent\Factories\Factory
-     */
+    public function afterMaking($user, Closure $callback = null)
+    {
+        $goals = Goal::all()->pluck('id')->toArray();
+
+        if (!empty($goals)) {
+            $attachedGoals = $this->faker->randomElements($goals, rand(1, count($goals)));
+            $user->goals()->attach($attachedGoals);
+        }
+    }
+
     public function unverified()
     {
         return $this->state(fn (array $attributes) => [

@@ -11,8 +11,6 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        $users = User::factory()->count(10)->create();
-
         $goals = [
             ['name' => 'musculation'],
             ['name' => 'fitness'],
@@ -22,7 +20,12 @@ class DatabaseSeeder extends Seeder
 
         Goal::insert($goals); 
 
+        $users = User::factory()->count(50)->create();
+
         foreach ($users as $user) {
+            $goalIds = Goal::all()->pluck('id')->toArray();
+            $user->goals()->attach(array_rand(array_flip($goalIds), rand(1, count($goalIds))));
+
             Schedules::factory()->create([
                 'user_id' => $user->id,
             ]);

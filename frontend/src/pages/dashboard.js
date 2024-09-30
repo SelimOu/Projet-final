@@ -3,26 +3,60 @@ import axios from "axios";
 import Header from "../componants/header";
 
 const DashboardClient = () => {
-    const [coaches, setCoaches] = useState([]);
-    const [filteredCoaches, setFilteredCoaches] = useState([]);
+    const [users, setUsers] = useState([]);
+    const [filteredUsers, setFilteredUsers] = useState([]);
     const [specialtyFilter, setSpecialtyFilter] = useState("");
     const [priceFilter, setPriceFilter] = useState("");
+    const [cityFilter, setCityFilter] = useState(""); // Added city filter state
     const [specialties, setSpecialties] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     const [currentPage, setCurrentPage] = useState(1);
-    const coachesPerPage = 4;
+    const usersPerPage = 4;
+    const [userRole, setUserRole] = useState("");
+    const [userGoals, setUserGoals] = useState([]);
 
     useEffect(() => {
-        const fetchCoaches = async () => {
+        const fetchUserData = async () => {
             try {
-                const response = await axios.get("http://localhost:9200/api/users");
-                const coachList = response.data.filter(user => user.role === "coach");
-                setCoaches(coachList);
-                setFilteredCoaches(coachList);
+                const token = localStorage.getItem('token');
+                const userId = localStorage.getItem('userId');
 
-                const uniqueSpecialties = [...new Set(coachList.map(coach => coach.goal))];
+                const userResponse = await axios.get(`http://localhost:9200/api/users/${userId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+
+                const userData = userResponse.data;
+                setUserRole(userData.role);
+
+                const goalIds = userData.goals.map(goal => goal.id);
+                setUserGoals(goalIds);
+
+                // Fetch all users
+                const allUsersResponse = await axios.get("http://localhost:9200/api/users", {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+
+                const allUsers = allUsersResponse.data;
+
+                let relevantUsers;
+                if (userData.role === "coach") {
+                    relevantUsers = allUsers.filter(user =>
+                        user.role === "client" && user.goals.some(goal => goalIds.includes(goal.id))
+                    );
+                } else {
+                    relevantUsers = allUsers.filter(user => user.role === "coach");
+                }
+
+                setUsers(relevantUsers);
+                setFilteredUsers(relevantUsers);
+
+                const uniqueSpecialties = [...new Set(relevantUsers.flatMap(user => user.goals.map(goal => goal.name)))];
                 setSpecialties(uniqueSpecialties);
 
                 setLoading(false);
@@ -32,7 +66,7 @@ const DashboardClient = () => {
             }
         };
 
-        fetchCoaches();
+        fetchUserData();
     }, []);
 
     const handleSpecialtyChange = (event) => {
@@ -43,33 +77,51 @@ const DashboardClient = () => {
         setPriceFilter(event.target.value);
     };
 
+    const handleCityChange = (event) => {
+        setCityFilter(event.target.value);
+    };
+
     useEffect(() => {
-        let filtered = coaches;
+        let filtered = users;
 
-        if (specialtyFilter) {
-            filtered = filtered.filter(coach =>
-                coach.goal.toLowerCase().includes(specialtyFilter.toLowerCase())
-            );
+        // Only filter if the user is not a coach
+        if (userRole !== "coach") {
+            // Filter by specialty (goal)
+            if (specialtyFilter) {
+                filtered = filtered.filter(user =>
+                    user.goals && user.goals.some(goal =>
+                        goal.name.toLowerCase().includes(specialtyFilter.toLowerCase())
+                    )
+                );
+            }
+
+            // Filter by price (if user has a price)
+            if (priceFilter) {
+                const priceValue = parseFloat(priceFilter);
+                filtered = filtered.filter(user => {
+                    const userPrice = parseFloat(user.price || 0);
+                    return userPrice <= priceValue;
+                });
+            }
+
+            // Filter by city
+            if (cityFilter) {
+                filtered = filtered.filter(user =>
+                    user.city && user.city.toLowerCase().includes(cityFilter.toLowerCase())
+                );
+            }
         }
 
-        if (priceFilter) {
-            const priceValue = parseFloat(priceFilter);
-            filtered = filtered.filter(coach => {
-                const coachPrice = parseFloat(coach.price);
-                return coachPrice <= priceValue;
-            });
-        }
-
-        setFilteredCoaches(filtered);
+        setFilteredUsers(filtered);
         setCurrentPage(1);
 
-    }, [specialtyFilter, priceFilter, coaches]);
+    }, [specialtyFilter, priceFilter, cityFilter, users, userRole]); // Added userRole to dependencies
 
-    const indexOfLastCoach = currentPage * coachesPerPage;
-    const indexOfFirstCoach = indexOfLastCoach - coachesPerPage;
-    const currentCoaches = filteredCoaches.slice(indexOfFirstCoach, indexOfLastCoach);
+    const indexOfLastUser = currentPage * usersPerPage;
+    const indexOfFirstUser = indexOfLastUser - usersPerPage;
+    const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
 
-    const totalPages = Math.ceil(filteredCoaches.length / coachesPerPage);
+    const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
 
     const handleNextPage = () => {
         if (currentPage < totalPages) {
@@ -95,53 +147,81 @@ const DashboardClient = () => {
         <div>
             <Header />
             <div className="flex flex-col items-center justify-center bg-cover bg-center h-screen" style={{ backgroundImage: `url('/imageDashClient.jpg')` }}>
-                <h2 className="text-8xl font-bold pb-5 mb-6 text-center text-white">Tous les Coachs</h2>
+                <h2 className="text-8xl font-bold pb-5 mb-6 text-center text-white">
+                    {userRole === 'coach' ? 'Tous les Clients' : 'Tous les Coachs'}
+                </h2>
             </div>
 
-            <div className="filters mb-6 mt-9 flex justify-center gap-4">
-                <div>
-                    <label className="block mb-2">Filtrer par spécialité:</label>
-                    <select
-                        value={specialtyFilter}
-                        onChange={handleSpecialtyChange}
-                        className="border p-2 rounded-md w-full"
-                    >
-                        <option value="">Toutes les spécialités</option>
-                        {specialties.map((specialty, index) => (
-                            <option key={index} value={specialty}>
-                                {specialty}
-                            </option>
-                        ))}
-                    </select>
+            {userRole !== 'coach' && (
+                <div className="filters mb-6 mt-9 flex justify-center gap-4">
+                    <div>
+                        <label className="block mb-2">Filtrer par spécialité:</label>
+                        <select
+                            value={specialtyFilter}
+                            onChange={handleSpecialtyChange}
+                            className="border p-2 rounded-md w-full"
+                        >
+                            <option value="">Toutes les spécialités</option>
+                            {specialties.map((specialty, index) => (
+                                <option key={index} value={specialty}>
+                                    {specialty}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <div>
+                        <label className="block mb-2">Filtrer par prix (maximum):</label>
+                        <input
+                            type="number"
+                            value={priceFilter}
+                            onChange={handlePriceChange}
+                            placeholder="Prix maximum"
+                            className="border p-2 rounded-md w-full"
+                        />
+                    </div>
+                    <div>
+                        <label className="block mb-2">Filtrer par ville:</label>
+                        <input
+                            type="text"
+                            value={cityFilter}
+                            onChange={handleCityChange}
+                            placeholder="Ville"
+                            className="border p-2 rounded-md w-full"
+                        />
+                    </div>
                 </div>
-                <div>
-                    <label className="block mb-2">Filtrer par prix (maximum):</label>
-                    <input
-                        type="number"
-                        value={priceFilter}
-                        onChange={handlePriceChange}
-                        placeholder="Prix maximum"
-                        className="border p-2 rounded-md w-full"
-                    />
-                </div>
-            </div>
+            )}
 
-            {currentCoaches.length === 0 ? (
-                <p className="text-center">Aucun coach trouvé.</p>
+            {currentUsers.length === 0 ? (
+                <p className="text-center">{userRole === 'coach' ? 'Aucun client trouvé.' : 'Aucun coach trouvé.'}</p>
             ) : (
-                <div className="flex flex-wrap justify-center gap-6">
-                    {currentCoaches.map((coach) => (
-                        <div key={coach.id} className="coach-card bg-white rounded-lg shadow-md p-4 flex flex-col items-center w-full lg:w-1/3">
+                <div className="flex flex-wrap justify-center mt-10 gap-6">
+                    {currentUsers.map((user) => (
+                        <div key={user.id} className="coach-card bg-white rounded-lg shadow-md p-4 flex flex-col items-center w-full lg:w-1/3">
                             <img
-                                src={`http://127.0.0.1:9200/storage/${coach.image}`}
-                                alt={coach.name}
+                                src={`http://127.0.0.1:9200/storage/${user.image}`}
+                                alt={user.name}
                                 className="w-48 h-48 object-cover rounded-full mb-4"
                             />
-                            <h3 className="text-xl font-semibold mb-2">{coach.name}</h3>
-                            <p className="text-gray-600">Prix : {coach.price} €</p>
-                            <p className="text-gray-600">Spécialité : {coach.goal}</p>
-                            <p className="text-gray-600">Numéro : {coach.numero}</p>
-                            <p className="text-gray-600">Mail : {coach.email}</p>
+                            <h3 className="text-xl font-semibold mb-2">{user.name}</h3>
+                            <p className="text-gray-900">Prix : {user.price} €</p>
+                            <p className="text-gray-900">
+                                Spécialités : {user.goals.map(goal => goal.name).join(', ')}
+                            </p>
+                            <p className="text-gray-900">Numéro : {user.numero}</p>
+                            <p className="text-gray-900">Mail : {user.email}</p>
+
+                            {user.role === 'coach' && (
+                                <>
+                                    <p className="text-gray-900">Ville : {user.city}</p>
+                                    {user.schedule && (
+                                        <div className="mt-4">
+                                            <h4 className="font-semibold">Horaires :</h4>
+                                            <p>{`Du ${user.schedule.day_start} au ${user.schedule.day_end} de ${user.schedule.hour_start} à ${user.schedule.hour_end}`}</p>
+                                        </div>
+                                    )}
+                                </>
+                            )}
                         </div>
                     ))}
                 </div>

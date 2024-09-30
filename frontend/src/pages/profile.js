@@ -11,7 +11,7 @@ const Profile = () => {
         numero: '',
         price: '',
         image: null,
-        goals: [] // Ajouté pour stocker les objectifs sélectionnés
+        goals: []
     });
     const [schedules, setSchedules] = useState({
         day_start: '',
@@ -24,7 +24,7 @@ const Profile = () => {
     const [userId, setUserId] = useState(null);
     const [errorMessage, setErrorMessage] = useState('');
     const [numeroError, setNumeroError] = useState('');
-    const [goalsList, setGoalsList] = useState([]); // Initialisation de la liste des objectifs
+    const [goalsList, setGoalsList] = useState([]);
     const [goalsError, setGoalsError] = useState('');
     const navigate = useNavigate();
 
@@ -67,7 +67,7 @@ const Profile = () => {
                     numero: user.numero || '',
                     price: user.price || '',
                     image: null,
-                    goals: user.goals.map(goal => goal.id) // Charger les objectifs de l'utilisateur
+                    goals: user.goals.map(goal => goal.id)
                 });
                 setPreviousImage(user.image);
                 setIsCoach(user.role === 'coach');
@@ -76,8 +76,7 @@ const Profile = () => {
                     await fetchSchedules(storedUserId, token);
                 }
 
-                // Charger la liste des objectifs
-                setGoalsList(goalsData); // Utilisation de la méthode des objectifs définie
+                setGoalsList(goalsData);
 
             } catch (error) {
                 console.error('Erreur lors de la récupération des données utilisateur:', error);
@@ -122,7 +121,7 @@ const Profile = () => {
 
     const formatTime = (timeString) => {
         if (timeString && timeString.length === 8) {
-            return timeString.substring(0, 5); // Reformate 'HH:mm:ss' en 'HH:mm'
+            return timeString.substring(0, 5);
         }
         return timeString;
     };
@@ -130,30 +129,40 @@ const Profile = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        let isValid = true; // Ajout de la variable pour suivre la validité du formulaire
+        let isValid = true;
 
         if (!formData.numero || !validateNumero(formData.numero)) {
             setNumeroError("Le numéro de téléphone doit contenir exactement 10 chiffres et commencer par 0.");
-            isValid = false; // Si le numéro n'est pas valide, on arrête la validation
+            isValid = false;
         } else {
             setNumeroError('');
         }
 
+        if (isCoach && !formData.city) {
+            setGoalsError("La ville est requise.");
+            isValid = false;
+        } else {
+            setGoalsError('');
+        }
+
         if (formData.password && formData.password.length < 8) {
             setErrorMessage('Le mot de passe doit contenir au moins 8 caractères.');
-            isValid = false; // Si le mot de passe est trop court, on arrête la validation
+            isValid = false;
         }
 
         if (!isValid) {
-            return; // Si le formulaire est invalide, on arrête l'exécution ici
+            return;
         }
 
-        const dataToSend = new FormData(); // Utilisation de FormData pour l'envoi de fichiers
+        const dataToSend = new FormData();
         dataToSend.append('role', isCoach ? 'coach' : 'client');
         dataToSend.append('name', formData.name);
         dataToSend.append('email', formData.email);
         dataToSend.append('numero', formData.numero);
-        dataToSend.append('price', formData.price);
+
+        if (isCoach) {
+            dataToSend.append('city', formData.city);
+        }
 
         if (formData.password) {
             dataToSend.append('password', formData.password);
@@ -182,7 +191,6 @@ const Profile = () => {
                     'Content-Type': 'multipart/form-data',
                 },
             });
-
 
             alert('Profil mis à jour avec succès !');
             navigate('/dashboard');
@@ -223,6 +231,32 @@ const Profile = () => {
         setGoalsError('');
     };
 
+    const handleDeleteAccount = async () => {
+        const confirmed = window.confirm("Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.");
+        if (!confirmed) return;
+
+        try {
+            const token = localStorage.getItem('token');
+            await axios.delete(`http://localhost:9200/api/users/${userId}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            alert('Votre compte a été supprimé avec succès.');
+            localStorage.removeItem('token');
+            localStorage.removeItem('userId');
+            navigate('/');
+        } catch (error) {
+            console.error('Erreur lors de la suppression du compte :', error);
+            if (error.response && error.response.data && error.response.data.message) {
+                setErrorMessage(error.response.data.message);
+            } else {
+                setErrorMessage('Une erreur est survenue lors de la suppression du compte.');
+            }
+        }
+    };
+
     const daysOfWeek = [
         { value: 'Lundi', label: 'Lundi' },
         { value: 'Mardi', label: 'Mardi' },
@@ -237,176 +271,194 @@ const Profile = () => {
         <div style={{ backgroundImage: `url('/imageprofile.jpg')` }}>
             <Header />
 
-            <div className="flex items-center justify-center min-h-screen mt-20 mb-22">
-                <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow-md w-full max-w-md mt-20 mb-20 ">
+            <div className="flex items-center justify-center min-h-screen mt-20 mb-22 mx-10">
+                <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow-md w-full max-w-md mt-20 mb-20">
                     {errorMessage && (
                         <div className="bg-red-200 text-red-600 p-4 mb-4">{errorMessage}</div>
                     )}
-                    {numeroError && (
-                        <div className="text-red-600 mb-4">{numeroError}</div>
-                    )}
-                    <h2 className="text-2xl mb-4">{isCoach ? 'Profil du Coach' : 'Profil du Client'}</h2>
+                    <h1 className="text-2xl font-bold mb-4">Profil</h1>
 
-                    <label className="block mb-2">
-                        Nom:
+                    <div className="mb-4">
+                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">Nom</label>
                         <input
                             type="text"
+                            id="name"
                             name="name"
                             value={formData.name}
                             onChange={handleChange}
-                            className="border border-gray-300 p-2 rounded w-full"
+                            className="border border-gray-300 rounded p-2 w-full"
                             required
                         />
-                    </label>
+                    </div>
 
-                    <label className="block mb-2">
-                        Email:
+                    <div className="mb-4">
+                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">Email</label>
                         <input
                             type="email"
+                            id="email"
                             name="email"
                             value={formData.email}
                             onChange={handleChange}
-                            className="border border-gray-300 p-2 rounded w-full"
+                            className="border border-gray-300 rounded p-2 w-full"
                             required
                         />
-                    </label>
+                    </div>
 
-                    <label className="block mb-2">
-                        Mot de passe:
+                    <div className="mb-4">
+                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">Mot de passe</label>
                         <input
                             type="password"
+                            id="password"
                             name="password"
                             value={formData.password}
                             onChange={handleChange}
-                            className="border border-gray-300 p-2 rounded w-full"
+                            className="border border-gray-300 rounded p-2 w-full"
+                            minLength="8"
                         />
-                    </label>
+                        <p className="text-gray-600 text-xs">Laissez vide pour conserver l'ancien mot de passe.</p>
+                    </div>
 
-                    <label className="block mb-2">
-                        Numéro de téléphone:
+                    <div className="mb-4">
+                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="numero">Numéro de téléphone</label>
                         <input
                             type="text"
+                            id="numero"
                             name="numero"
                             value={formData.numero}
                             onChange={handleChange}
-                            className="border border-gray-300 p-2 rounded w-full"
+                            className={`border border-gray-300 rounded p-2 w-full ${numeroError ? 'border-red-500' : ''}`}
                             required
                         />
-                    </label>
+                        {numeroError && (
+                            <p className="text-red-500 text-xs italic">{numeroError}</p>
+                        )}
+                    </div>
 
+                    {isCoach && (
+                        <div className="mb-4">
+                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="city">Ville</label>
+                            <input
+                                type="text"
+                                id="city"
+                                name="city"
+                                value={formData.city || ''}
+                                onChange={handleChange}
+                                className={`border border-gray-300 rounded p-2 w-full ${goalsError ? 'border-red-500' : ''}`}
+                                required
+                            />
+                            {goalsError && (
+                                <p className="text-red-500 text-xs italic">{goalsError}</p>
+                            )}
+                        </div>
+                    )}
 
-
-                    <label className="block mb-2">
-                        Image:
-                        <input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => setFormData({ ...formData, image: e.target.files[0] })}
-                            className="border border-gray-300 p-2 rounded w-full"
-                        />
-                    </label>
+                    {/* Champ Objectifs */}
+                    <div className="mb-4">
+                        <label className="block text-gray-700 text-sm font-bold mb-2">Objectifs</label>
+                        <div className="flex flex-wrap">
+                            {goalsList.map(goal => (
+                                <div key={goal.id} className="mr-4 mb-2">
+                                    <label className="inline-flex items-center">
+                                        <input
+                                            type="checkbox"
+                                            checked={formData.goals.includes(goal.id)}
+                                            onChange={() => handleGoalChange(goal.id)}
+                                            className="form-checkbox"
+                                        />
+                                        <span className="ml-2">{goal.name}</span>
+                                    </label>
+                                </div>
+                            ))}
+                        </div>
+                        {goalsError && (
+                            <p className="text-red-500 text-xs italic">{goalsError}</p>
+                        )}
+                    </div>
 
                     {isCoach && (
                         <>
-                            <label className="block mb-2">
-                                Tarif /h
-                                <input
-                                    type="number"
-                                    name="price"
-                                    value={formData.price}
-                                    onChange={handleChange}
-                                    required
-                                    className="border border-gray-300 p-2 rounded w-full"
-                                />
-                            </label>
-                            <h3 className="text-xl mt-4">Horaires</h3>
-
                             <div className="mb-4">
-                                <label className="block text-gray-700" htmlFor="day_start">Jour de début :</label>
+                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="day_start">Jour de début</label>
                                 <select
+                                    id="day_start"
                                     name="day_start"
                                     value={schedules.day_start}
                                     onChange={handleScheduleChange}
-                                    className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-600 focus:outline-none"
+                                    className="border border-gray-300 rounded p-2 w-full"
                                 >
                                     <option value="">Sélectionnez un jour</option>
-                                    {daysOfWeek.map((day) => (
-                                        <option key={day.value} value={day.value}>
-                                            {day.label}
-                                        </option>
+                                    {daysOfWeek.map(day => (
+                                        <option key={day.value} value={day.value}>{day.label}</option>
                                     ))}
                                 </select>
                             </div>
+
                             <div className="mb-4">
-                                <label className="block text-gray-700" htmlFor="day_end">Jour de fin :</label>
-                                <select
-                                    name="day_end"
-                                    value={schedules.day_end}
-                                    onChange={handleScheduleChange}
-                                    className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-600 focus:outline-none"
-                                >
-                                    <option value="">Sélectionnez un jour</option>
-                                    {daysOfWeek.map((day) => (
-                                        <option key={day.value} value={day.value}>
-                                            {day.label}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                            <label className="block mb-2">
-                                Heure de début:
+                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="hour_start">Heure de début</label>
                                 <input
                                     type="time"
+                                    id="hour_start"
                                     name="hour_start"
                                     value={schedules.hour_start}
                                     onChange={handleScheduleChange}
-                                    className="border border-gray-300 p-2 rounded w-full"
+                                    className="border border-gray-300 rounded p-2 w-full"
                                 />
-                            </label>
+                            </div>
 
-                            <label className="block mb-2">
-                                Heure de fin:
+                            <div className="mb-4">
+                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="day_end">Jour de fin</label>
+                                <select
+                                    id="day_end"
+                                    name="day_end"
+                                    value={schedules.day_end}
+                                    onChange={handleScheduleChange}
+                                    className="border border-gray-300 rounded p-2 w-full"
+                                >
+                                    <option value="">Sélectionnez un jour</option>
+                                    {daysOfWeek.map(day => (
+                                        <option key={day.value} value={day.value}>{day.label}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div className="mb-4">
+                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="hour_end">Heure de fin</label>
                                 <input
                                     type="time"
+                                    id="hour_end"
                                     name="hour_end"
                                     value={schedules.hour_end}
                                     onChange={handleScheduleChange}
-                                    className="border border-gray-300 p-2 rounded w-full"
+                                    className="border border-gray-300 rounded p-2 w-full"
                                 />
-                            </label>
+                            </div>
                         </>
                     )}
 
-                    <h3 className="text-xl mt-4">Objectifs</h3>
-                    {goalsList.map((goal) => (
-                        <label key={goal.id} className="block mb-2">
-                            <input
-                                type="checkbox"
-                                checked={formData.goals.includes(goal.id)}
-                                onChange={() => handleGoalChange(goal.id)}
-                            />
-                            {goal.name}
-                        </label>
-                    ))}
-                    {goalsError && (
-                        <div className="text-red-600 mb-4">{goalsError}</div>
-                    )}
+                    <div className="flex items-center justify-between">
+                        <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                            Mettre à jour le profil
+                        </button>
+                    </div>
 
-                    <button type="submit" className="bg-blue-500 text-white p-2 rounded">
-                        Enregistrer
-                    </button>
+                    {/* Bouton Supprimer le Compte */}
+                    <div className="mt-6">
+                        <button
+                            type="button"
+                            onClick={handleDeleteAccount}
+                            className="w-full bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                        >
+                            Supprimer mon compte
+                        </button>
+                    </div>
                 </form>
-            </div >
-
-            <footer className="bg-gray-800 text-gray-400 py-8">
+            </div>
+            <footer className="bg-gray-800 text-gray-400 py-8 w-full mt-10">
                 <div className="container mx-auto px-4 text-center">
-                    <p>&copy; 2024 CoachFinder 63. Tous droits réservés.</p>
+                    <p>&copy; 2024 CoachFinder. Tous droits réservés.</p>
                 </div>
             </footer>
         </div>
-
-
-
     );
 };
 

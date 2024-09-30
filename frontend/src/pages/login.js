@@ -1,8 +1,7 @@
-// src/pages/Login.js
-
 import React, { useState } from 'react';
 import axios from 'axios';
 import { NavLink, useNavigate } from "react-router-dom";
+import Header from '../componants/header';
 
 function Login() {
     const [email, setEmail] = useState('');
@@ -24,15 +23,15 @@ function Login() {
                 password,
             });
 
-            const { token, user } = response.data; // Assurez-vous que 'user' est renvoyé par votre API
+            const { token, user } = response.data;
             console.log('Réponse de l\'API:', response.data);
 
             if (token) {
                 localStorage.setItem('token', token);
-                localStorage.setItem('userId', user.id); // Stockez l'ID de l'utilisateur
+                localStorage.setItem('userId', user.id);
                 setSuccessMessage('Connexion réussie!');
 
-                navigate('/dashboard'); // Utilisez navigate pour rediriger vers le tableau de bord
+                navigate('/dashboard');
             }
 
         } catch (error) {
@@ -45,6 +44,7 @@ function Login() {
 
     return (
         <div className="flex flex-col items-center justify-center bg-cover bg-center h-screen" style={{ backgroundImage: `url('/imagedefond.jpg')` }}>
+            <Header />
             <form onSubmit={handleSubmit} className="w-full max-w-sm bg-white p-8 rounded-lg shadow-md">
                 <div>
                     <label className="block text-gray-700">Email:</label>
@@ -80,6 +80,7 @@ function Login() {
             <NavLink to={'/register'}>
                 <button className="mt-4 px-4 py-2 bg-blue-900 text-white rounded-lg">Inscription</button>
             </NavLink>
+
         </div>
     );
 }

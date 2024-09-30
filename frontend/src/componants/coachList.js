@@ -53,14 +53,16 @@ const CoachList = () => {
                 className="w-48 h-48 object-cover rounded-full mb-4"
               />
               <h3 className="text-xl font-semibold mb-2">{coach.name}</h3>
-              <p className="text-gray-600">Prix : {coach.price} €</p>
-              <p className="text-gray-600">Specialitée : {coach.goal}</p>
-              <p className="text-gray-600">Numéro : {coach.numero}</p>
-              <p className="text-gray-600">Mail : {coach.email}</p>
+              <p className="text-gray-600">Tarif /h : {coach.price} €</p>
+              <p className="text-gray-900">
+                Spécialités : {coach.goals.map(goal => goal.name).join(', ')}
+              </p>
             </div>
           ))}
         </div>
+
       )}
+      <h1 className="text-2xl font-bold mt-6 mb-6 text-center">Connectez vous pour en voir plus</h1>
     </div>
   )
 }
