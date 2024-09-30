@@ -185,7 +185,7 @@ const Profile = () => {
 
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.post(`http://localhost:9200/api/users/${userId}?_method=PUT`, dataToSend, {
+            const response = await axios.post(`https://projet-final-jvgt.onrender.com/api/users/${userId}?_method=PUT`, dataToSend, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'multipart/form-data',
@@ -237,7 +237,7 @@ const Profile = () => {
 
         try {
             const token = localStorage.getItem('token');
-            await axios.delete(`http://localhost:9200/api/users/${userId}`, {
+            await axios.delete(`https://projet-final-jvgt.onrender.com/api/users/${userId}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },

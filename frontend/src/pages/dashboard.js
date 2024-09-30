@@ -7,7 +7,7 @@ const DashboardClient = () => {
     const [filteredUsers, setFilteredUsers] = useState([]);
     const [specialtyFilter, setSpecialtyFilter] = useState("");
     const [priceFilter, setPriceFilter] = useState("");
-    const [cityFilter, setCityFilter] = useState(""); // Added city filter state
+    const [cityFilter, setCityFilter] = useState("");
     const [specialties, setSpecialties] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -23,7 +23,7 @@ const DashboardClient = () => {
                 const token = localStorage.getItem('token');
                 const userId = localStorage.getItem('userId');
 
-                const userResponse = await axios.get(`http://localhost:9200/api/users/${userId}`, {
+                const userResponse = await axios.get(`https://projet-final-jvgt.onrender.com/api/users/${userId}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                     },
@@ -36,7 +36,7 @@ const DashboardClient = () => {
                 setUserGoals(goalIds);
 
                 // Fetch all users
-                const allUsersResponse = await axios.get("http://localhost:9200/api/users", {
+                const allUsersResponse = await axios.get("https://projet-final-jvgt.onrender.com/api/users", {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                     },

@@ -11,7 +11,7 @@ const CoachList = () => {
   useEffect(() => {
     const fetchCoaches = async () => {
       try {
-        const response = await axios.get("http://localhost:9200/api/users");
+        const response = await axios.get("https://projet-final-jvgt.onrender.com/api/users");
 
         const filteredCoaches = response.data.filter(user => user.role === "coach");
         const lastThreeCoaches = filteredCoaches.slice(-3);
