@@ -25,10 +25,10 @@ RUN chown -R www-data:www-data /var/www/html
 # Installer les dépendances PHP avec Composer (avec logs détaillés)
 RUN composer install --verbose
 
-# Exposer le port 9200
+# Exposer le port 1000
 EXPOSE 1000
 
-# Démarrer Laravel avec php artisan serve sur le port 9200 et exécuter les migrations
+# Démarrer Laravel avec php artisan serve sur le port 1000 et exécuter les migrations
 CMD php artisan migrate --force && \
-    php artisan db:seed \
+    php artisan db:seed --class=DatabaseSeeder && \
     php artisan serve --host=0.0.0.0 --port=${PORT:-1000}
