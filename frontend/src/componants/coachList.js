@@ -48,7 +48,7 @@ const CoachList = () => {
           {coaches.map((coach) => (
             <div key={coach.id} className="coach-card  bg-white rounded-lg shadow-md p-4 flex flex-col items-center w-full lg:w-1/3 ">
               <img
-                src={`http://127.0.0.1:9200/storage/${coach.image}`}
+                src={`https://projet-final-front.onrender.com/storage/${coach.image}`}
                 alt={`${coach.name}`}
                 className="w-48 h-48 object-cover rounded-full mb-4"
               />
@@ -62,7 +62,13 @@ const CoachList = () => {
         </div>
 
       )}
-      <h1 className="text-2xl font-bold mt-6 mb-6 text-center">Connectez vous pour en voir plus</h1>
+      <div className=" font-bold mt-6 mb-6 text-center"><a
+        href="/login"
+        className="bg-blue-900 text-white font-semibold py-2 px-6 rounded-full hover:bg-blue-900"
+      >
+        Connectez vous pour ne voir plus
+      </a>
+      </div>
     </div>
   )
 }

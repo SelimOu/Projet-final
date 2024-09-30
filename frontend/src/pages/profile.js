@@ -89,7 +89,7 @@ const Profile = () => {
 
         const fetchSchedules = async (userId, token) => {
             try {
-                const scheduleResponse = await axios.get(`http://localhost:9200/api/schedules/${userId}`, {
+                const scheduleResponse = await axios.get(`https://projet-final-jvgt.onrender.com/api/schedules/${userId}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                     },

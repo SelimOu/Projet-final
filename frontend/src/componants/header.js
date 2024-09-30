@@ -53,11 +53,10 @@ const Header = () => {
                                 <Link to="/" className="text-gray-700 hover:text-blue-900">Home</Link>
                             </li>
                             <li>
-                                {/* Naviguer vers "/" avec un état pour l'ancre */}
                                 <Link to="/" state={{ scrollToAbout: true }} className="text-gray-700 hover:text-blue-900">About</Link>
                             </li>
                             <li>
-                                <Link to="/contact" className="text-gray-700 hover:text-blue-900">Contact</Link>
+                                <Link to="/" state={{ scrollToContact: true }} className="text-gray-700 hover:text-blue-900">Contact</Link>
                             </li>
                             {isLoggedIn ? (
                                 <>
@@ -90,7 +89,7 @@ const Header = () => {
                                 <Link to="/" state={{ scrollToAbout: true }} className="text-gray-700 hover:text-blue-500">About</Link>
                             </li>
                             <li>
-                                <Link to="/contact" className="text-gray-700 hover:text-blue-500">Contact</Link>
+                                <Link to="/" state={{ scrollToAbout: true }} className="text-gray-700 hover:text-blue-500">Contact</Link>
                             </li>
                             {isLoggedIn ? (
                                 <>

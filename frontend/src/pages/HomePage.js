@@ -50,11 +50,29 @@ const HomePage = () => {
                 <CoachList />
             </section>
 
+            <section id="contact" className="bg-gray-300 text-white py-20 text-center">
+                <h2 className="text-3xl font-semibold mt-8 mb-4 text-gray-700">3. Nous contacter</h2>
+                <p className="mb-4 text-gray-600">
+                    <strong>Par téléphone :</strong> <a href="tel:+33712345689" className="text-blue-600 hover:underline">+33712345689</a><br />
+                    <strong>Par email :</strong> <a href="mailto:CoachFinder@contact.com" className="text-blue-600 hover:underline">CoachFinder@contact.com</a><br />
+                    <strong>Par courrier :</strong> 2 rue de l'échappée, 75010 PARIS, France
+                </p>
+            </section>
+
             <footer className="bg-gray-800 text-gray-400 py-8">
                 <div className="container mx-auto px-4 text-center">
                     <p>&copy; 2024 CoachFinder. Tous droits réservés.</p>
+                    <p>
+                        <a
+                            href="/legals"
+                            className="text-gray-400 hover:text-white transition-colors duration-200"
+                        >
+                            Mentions légales
+                        </a>
+                    </p>
                 </div>
             </footer>
+
         </div>
     );
 };

@@ -35,7 +35,6 @@ const DashboardClient = () => {
                 const goalIds = userData.goals.map(goal => goal.id);
                 setUserGoals(goalIds);
 
-                // Fetch all users
                 const allUsersResponse = await axios.get("https://projet-final-jvgt.onrender.com/api/users", {
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -84,9 +83,7 @@ const DashboardClient = () => {
     useEffect(() => {
         let filtered = users;
 
-        // Only filter if the user is not a coach
         if (userRole !== "coach") {
-            // Filter by specialty (goal)
             if (specialtyFilter) {
                 filtered = filtered.filter(user =>
                     user.goals && user.goals.some(goal =>
@@ -95,7 +92,6 @@ const DashboardClient = () => {
                 );
             }
 
-            // Filter by price (if user has a price)
             if (priceFilter) {
                 const priceValue = parseFloat(priceFilter);
                 filtered = filtered.filter(user => {
@@ -104,7 +100,6 @@ const DashboardClient = () => {
                 });
             }
 
-            // Filter by city
             if (cityFilter) {
                 filtered = filtered.filter(user =>
                     user.city && user.city.toLowerCase().includes(cityFilter.toLowerCase())
@@ -115,7 +110,7 @@ const DashboardClient = () => {
         setFilteredUsers(filtered);
         setCurrentPage(1);
 
-    }, [specialtyFilter, priceFilter, cityFilter, users, userRole]); // Added userRole to dependencies
+    }, [specialtyFilter, priceFilter, cityFilter, users, userRole]);
 
     const indexOfLastUser = currentPage * usersPerPage;
     const indexOfFirstUser = indexOfLastUser - usersPerPage;
@@ -199,7 +194,7 @@ const DashboardClient = () => {
                     {currentUsers.map((user) => (
                         <div key={user.id} className="coach-card bg-white rounded-lg shadow-md p-4 flex flex-col items-center w-full lg:w-1/3">
                             <img
-                                src={`http://127.0.0.1:9200/storage/${user.image}`}
+                                src={`https://projet-final-front.onrender.com/storage/${user.image}`}
                                 alt={user.name}
                                 className="w-48 h-48 object-cover rounded-full mb-4"
                             />
