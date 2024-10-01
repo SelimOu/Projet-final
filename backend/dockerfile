@@ -29,10 +29,5 @@ RUN composer install --verbose
 EXPOSE 1000
 
 # Commande d'initialisation avant le démarrage du serveur
-CMD if [ ! -f /var/www/html/database/seeded ]; then \
-    php artisan migrate --force && \
-    php artisan db:seed --class=DatabaseSeeder && \
-    touch /var/www/html/database/seeded; \
-    fi && \
-    php artisan storage:link && \
+CMD php artisan migrate --force && \
     php artisan serve --host=0.0.0.0 --port=${PORT:-1000}
