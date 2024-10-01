@@ -25,9 +25,17 @@ RUN chown -R www-data:www-data /var/www/html
 # Installer les dépendances PHP avec Composer (avec logs détaillés)
 RUN composer install --verbose
 
+# Lier le stockage Laravel
+RUN php artisan storage:link
+
+# Assurer les bonnes permissions pour le stockage et le cache
+RUN chown -R www-data:www-data storage bootstrap/cache && \
+    chmod -R 775 storage bootstrap/cache
+
 # Exposer le port 1000
 EXPOSE 1000
 
 # Commande d'initialisation avant le démarrage du serveur
 CMD php artisan migrate --force && \
+    php artisan config:cache && \
     php artisan serve --host=0.0.0.0 --port=${PORT:-1000}
