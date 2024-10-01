@@ -36,8 +36,8 @@ RUN a2enmod rewrite
 # Configurer Apache pour permettre les réécritures
 COPY backend/apache/laravel.conf /etc/apache2/sites-available/000-default.conf
 
-# Assurer les permissions correctes pour Apache
-RUN chown -R www-data:www-data /var/www/html && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+# Assurer les permissions correctes pour Apache sur tout le projet
+RUN chown -R www-data:www-data /var/www/html && chmod -R 775 /var/www/html
 
 # Exposer le port 80 pour Apache
 EXPOSE 80
