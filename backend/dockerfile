@@ -26,7 +26,10 @@ RUN php artisan storage:link
 # Création manuelle du lien symbolique pour le stockage si nécessaire
 RUN ln -s /var/www/html/storage/app/public /var/www/html/public/storage
 
-# Ajustement des permissions
+# Ajustement des permissions sur les répertoires de stockage
+RUN chmod -R 775 /var/www/html/storage && chmod -R 775 /var/www/html/public/storage
+
+# Ajustement des permissions pour les dossiers cache et storage
 RUN chown -R www-data:www-data storage bootstrap/cache && \
     chmod -R 775 storage bootstrap/cache
 
