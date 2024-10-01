@@ -1,40 +1,39 @@
-# Utiliser une image officielle PHP avec des extensions nécessaires
 FROM php:8.2-cli
 
-# Définir le répertoire de travail
 WORKDIR /var/www/html
 
-# Installer les extensions PHP nécessaires
+# Mise à jour et installation des dépendances nécessaires
 RUN apt-get update && \
     apt-get install -y libzip-dev unzip git && \
     docker-php-ext-install pdo pdo_mysql zip
 
-# Installer Composer
+# Installation de Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Copier les fichiers de l'application dans le conteneur
+# Copie du code source
 COPY backend/ /var/www/html
 
-# Assurer que le fichier artisan est exécutable
+# Configuration des permissions pour Laravel
 RUN chmod +x /var/www/html/artisan
-
-# Assurer que les permissions sont correctes
 RUN chown -R www-data:www-data /var/www/html
 
-# Installer les dépendances PHP avec Composer (avec logs détaillés)
+# Installation des dépendances PHP via Composer
 RUN composer install --verbose
 
-# Lier le stockage Laravel
+# Création du lien symbolique pour le stockage
 RUN php artisan storage:link
 
-# Assurer les bonnes permissions pour le stockage et le cache
+# Création manuelle du lien symbolique pour le stockage si nécessaire
+RUN ln -s /var/www/html/storage/app/public /var/www/html/public/storage
+
+# Ajustement des permissions
 RUN chown -R www-data:www-data storage bootstrap/cache && \
     chmod -R 775 storage bootstrap/cache
 
-# Exposer le port 1000
+# Exposition du port
 EXPOSE 1000
 
-# Commande d'initialisation avant le démarrage du serveur
+# Commandes de démarrage de Laravel (migrations, cache, et serveur)
 CMD php artisan migrate --force && \
     php artisan config:cache && \
     php artisan serve --host=0.0.0.0 --port=${PORT:-1000}
