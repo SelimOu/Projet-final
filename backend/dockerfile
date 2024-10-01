@@ -28,7 +28,11 @@ RUN composer install --verbose
 # Exposer le port 1000
 EXPOSE 1000
 
-# Démarrer Laravel avec php artisan serve sur le port 1000 et exécuter les migrations
-CMD php artisan migrate --force && \
+# Commande d'initialisation avant le démarrage du serveur
+CMD if [ ! -f /var/www/html/database/seeded ]; then \
+    php artisan migrate --force && \
     php artisan db:seed --class=DatabaseSeeder && \
+    touch /var/www/html/database/seeded; \
+    fi && \
+    php artisan storage:link && \
     php artisan serve --host=0.0.0.0 --port=${PORT:-1000}
