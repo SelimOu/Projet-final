@@ -1,18 +1,13 @@
 # Utiliser une image officielle PHP avec Apache
 FROM php:8.2-apache
 
-# Installer les dépendances système et les extensions PHP nécessaires
-RUN apt-get update && apt-get install -y \
-    libzip-dev \
-    unzip \
-    git \
-    && docker-php-ext-install pdo pdo_mysql zip
-
-# Activer le module Apache mod_rewrite
-RUN a2enmod rewrite
+# Installer les extensions PHP nécessaires et d'autres dépendances
+RUN apt-get update && \
+    apt-get install -y libzip-dev unzip git && \
+    docker-php-ext-install pdo pdo_mysql zip
 
 # Installer Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Définir le répertoire de travail
 WORKDIR /var/www/html
@@ -20,31 +15,30 @@ WORKDIR /var/www/html
 # Copier les fichiers de l'application dans le conteneur
 COPY backend/ /var/www/html
 
-# Copier une configuration Apache personnalisée (facultatif mais recommandé)
-COPY backend/apache/000-default.conf /etc/apache2/sites-available/000-default.conf
-
-# Installer les dépendances PHP avec Composer (optimisé pour la production)
-RUN composer install --optimize-autoloader --no-dev
-
 # Assurer que le fichier artisan est exécutable
 RUN chmod +x /var/www/html/artisan
 
-# Assurer que les permissions sont correctes pour storage et cache
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
-    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+# Assurer que les permissions sont correctes sur les répertoires de stockage
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Créer le lien symbolique pour le stockage
+# Installer les dépendances PHP avec Composer (avec logs détaillés)
+RUN composer install --verbose
+
+# Créer un lien symbolique pour le répertoire de stockage
 RUN php artisan storage:link
 
-# Copier le fichier .env (assurez-vous qu'il est correctement configuré)
-COPY backend/.env /var/www/html/.env
+# Assurer que les permissions du répertoire de stockage et des liens symboliques sont correctes
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/public/storage
+
+# Activer les modules Apache nécessaires
+RUN a2enmod rewrite
+
+# Configurer Apache pour permettre les réécritures
+COPY apache/laravel.conf /etc/apache2/sites-available/000-default.conf
 
 # Exposer le port 80 pour Apache
 EXPOSE 80
 
 # Commande d'initialisation avant le démarrage du serveur
 CMD php artisan migrate --force && \
-    php artisan config:cache && \
-    php artisan route:cache && \
-    php artisan view:cache && \
-    apache2-foreground
+    php artisan serve --host=0.0.0.0 --port=10000
