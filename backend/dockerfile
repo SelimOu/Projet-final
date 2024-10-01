@@ -18,11 +18,11 @@ COPY backend/ /var/www/html
 # Assurer que le fichier artisan est exécutable
 RUN chmod +x /var/www/html/artisan
 
-# Assurer que les permissions sont correctes sur les répertoires de stockage
+# Assurer que les permissions sont correctes sur les répertoires de stockage et cache
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Installer les dépendances PHP avec Composer (avec logs détaillés)
-RUN composer install --verbose
+RUN composer install --verbose --no-dev --optimize-autoloader
 
 # Créer un lien symbolique pour le répertoire de stockage
 RUN php artisan storage:link
@@ -35,9 +35,13 @@ RUN a2enmod rewrite
 
 # Configurer Apache pour permettre les réécritures
 COPY backend/apache/laravel.conf /etc/apache2/sites-available/000-default.conf
+
+# Assurer les permissions correctes pour Apache
+RUN chown -R www-data:www-data /var/www/html && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+
 # Exposer le port 80 pour Apache
 EXPOSE 80
 
 # Commande d'initialisation avant le démarrage du serveur
 CMD php artisan migrate --force && \
-    php artisan serve --host=0.0.0.0 --port=10000
+    apache2-foreground
