@@ -151,8 +151,8 @@ const DashboardClient = () => {
             {userRole !== 'coach' && (
                 <div className="filters mb-6 mt-9 flex justify-center gap-4">
                     <div>
-                        <label className="block mb-2">Filtrer par spécialité:</label>
-                        <select
+                        <label htmlFor="select" className="block mb-2">Filtrer par spécialité:</label>
+                        <select id="select"
                             value={specialtyFilter}
                             onChange={handleSpecialtyChange}
                             className="border p-2 rounded-md w-full"

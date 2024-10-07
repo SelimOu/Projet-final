@@ -51,11 +51,11 @@ const HomePage = () => {
                 <CoachList />
             </section>
 
-            <section id="contact" className="bg-gray-300 text-white py-20 text-center">
-                <h2 className="text-3xl font-semibold mt-8 mb-4 text-gray-700">3. Nous contacter</h2>
-                <p className="mb-4 text-gray-600">
-                    <strong>Par téléphone :</strong> <a href="tel:+33712345689" className="text-blue-600 hover:underline">+33712345689</a><br />
-                    <strong>Par email :</strong> <a href="mailto:CoachFinder@contact.com" className="text-blue-600 hover:underline">CoachFinder@contact.com</a><br />
+            <section id="contact" className="bg-gray-200 text-white py-20 text-center">
+                <h2 className="text-3xl font-semibold mt-8 mb-4 text-gray-900">3. Nous contacter</h2>
+                <p className="mb-4 text-gray-900">
+                    <strong>Par téléphone :</strong> <a href="tel:+33712345689" className="text-blue-900 hover:underline">+33712345689</a><br />
+                    <strong>Par email :</strong> <a href="mailto:CoachFinder@contact.com" className="text-blue-900 hover:underline">CoachFinder@contact.com</a><br />
                     <strong>Par courrier :</strong> 2 rue de l'échappée, 75010 PARIS, France
                 </p>
             </section>
