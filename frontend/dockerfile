@@ -1,20 +1,13 @@
-# Utiliser l'image Node.js officielle comme image de base
 FROM node:18
 
-# Définir le répertoire de travail
 WORKDIR /app
 
-# Copier le package.json et package-lock.json
 COPY package*.json ./
 
-# Installer les dépendances
 RUN npm install
 
-# Copier le reste de l'application
 COPY . .
 
-# Exposer le port 3000 pour le serveur de développement
 EXPOSE 3000
 
-# Démarrer l'application en mode développement
 CMD ["npm", "start"]

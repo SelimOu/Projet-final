@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Header from '../componants/header';
+import Footer from '../componants/footer';
 
 const Profile = () => {
     const [formData, setFormData] = useState({
@@ -53,7 +54,7 @@ const Profile = () => {
 
                 setUserId(storedUserId);
 
-                const response = await axios.get(`http://localhost:9200/api/users/${storedUserId}`, {
+                const response = await axios.get(`hhttps://projet-final-jvgt.onrender.com/users/${storedUserId}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                     },
@@ -352,7 +353,6 @@ const Profile = () => {
                         </div>
                     )}
 
-                    {/* Champ Objectifs */}
                     <div className="mb-4">
                         <label className="block text-gray-700 text-sm font-bold mb-2">Objectifs</label>
                         <div className="flex flex-wrap">
@@ -441,7 +441,6 @@ const Profile = () => {
                         </button>
                     </div>
 
-                    {/* Bouton Supprimer le Compte */}
                     <div className="mt-6">
                         <button
                             type="button"
@@ -453,11 +452,7 @@ const Profile = () => {
                     </div>
                 </form>
             </div>
-            <footer className="bg-gray-800 text-gray-400 py-8 w-full mt-10">
-                <div className="container mx-auto px-4 text-center">
-                    <p>&copy; 2024 CoachFinder. Tous droits réservés.</p>
-                </div>
-            </footer>
+            <Footer />
         </div>
     );
 };

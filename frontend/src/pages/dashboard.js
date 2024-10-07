@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Header from "../componants/header";
+import Footer from "../componants/footer";
 
 const DashboardClient = () => {
     const [users, setUsers] = useState([]);
@@ -241,12 +242,8 @@ const DashboardClient = () => {
                     Suivant
                 </button>
             </div>
+            <Footer />
 
-            <footer className="bg-gray-800 text-gray-400 py-8 mt-6">
-                <div className="container mx-auto px-4 text-center">
-                    <p>&copy; 2024 CoachFinder 63. Tous droits réservés.</p>
-                </div>
-            </footer>
         </div>
     );
 };

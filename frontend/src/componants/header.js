@@ -64,7 +64,7 @@ const Header = () => {
                                         <Link to="/dashboard" className="text-gray-700 hover:text-blue-900">Dashboard</Link>
                                     </li>
                                     <li>
-                                        <Link to="/profile" className="text-gray-700 hover:text-blue-900">Modifier mon Profil</Link>
+                                        <Link to="/profile" className="text-gray-700 hover:text-blue-900">Modifier mon Profile</Link>
                                     </li>
                                     <li>
                                         <button onClick={handleLogout} className="text-gray-700 hover:text-blue-900">Se déconnecter</button>
@@ -94,7 +94,10 @@ const Header = () => {
                             {isLoggedIn ? (
                                 <>
                                     <li>
-                                        <Link to="/profile" className="text-gray-700 hover:text-blue-500">Profil</Link>
+                                        <Link to="/profile" className="text-gray-700 hover:text-blue-500">Modifier mon Profile</Link>
+                                    </li>
+                                    <li>
+                                        <Link to="/dashboard" className="text-gray-700 hover:text-blue-500">Dashboard</Link>
                                     </li>
                                     <li>
                                         <button onClick={handleLogout} className="text-gray-700 hover:text-blue-500">Se déconnecter</button>

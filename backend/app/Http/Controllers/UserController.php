@@ -12,7 +12,6 @@ class UserController extends Controller
 {
     public function index()
     {
-        // Inclure city dans la récupération des utilisateurs
         $users = User::with('schedule', 'goals')->get(); 
         return response()->json($users);
     }
@@ -33,7 +32,7 @@ class UserController extends Controller
             'numero' => 'required|string|regex:/^0\d{9}$/',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'price' => 'nullable|numeric', 
-            'city' => 'nullable|string|max:255', // Ajout de la validation pour city
+            'city' => 'nullable|string|max:255', 
             'day_start' => 'nullable|string|in:Lundi,Mardi,Mercredi,Jeudi,Vendredi,Samedi,Dimanche',
             'day_end' => 'nullable|string|in:Lundi,Mardi,Mercredi,Jeudi,Vendredi,Samedi,Dimanche',
             'hour_start' => 'nullable|date_format:H:i',
@@ -47,7 +46,7 @@ class UserController extends Controller
             'role' => $validatedData['role'],
             'numero' => $validatedData['numero'],
             'price' => $validatedData['price'] ?? null, 
-            'city' => $validatedData['city'] ?? null, // Ajout de city lors de la création
+            'city' => $validatedData['city'] ?? null, 
         ]);
 
         if ($user->role === 'coach') {
@@ -71,7 +70,7 @@ class UserController extends Controller
     public function show($id)
     {
         $user = User::with('schedule', 'goals')->findOrFail($id);
-        return response()->json($user); // city sera inclus automatiquement
+        return response()->json($user); 
     }
 
     public function update(Request $request, $id)
@@ -92,7 +91,7 @@ class UserController extends Controller
             'goals.*' => 'exists:goals,id',
             'numero' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'city' => 'nullable|string|max:255', // Validation pour city
+            'city' => 'nullable|string|max:255', 
             'day_start' => 'nullable|string|in:Lundi,Mardi,Mercredi,Jeudi,Vendredi,Samedi,Dimanche',
             'day_end' => 'nullable|string|in:Lundi,Mardi,Mercredi,Jeudi,Vendredi,Samedi,Dimanche',
             'hour_start' => 'nullable|date_format:H:i',
@@ -106,7 +105,7 @@ class UserController extends Controller
             'role' => $validatedData['role'] ?? $user->role,
             'price' => $validatedData['price'] ?? $user->price,
             'numero' => $validatedData['numero'] ?? $user->numero,
-            'city' => $validatedData['city'] ?? $user->city, // Mettre à jour city
+            'city' => $validatedData['city'] ?? $user->city, 
         ]));
     
         if ($user->role === 'coach') {

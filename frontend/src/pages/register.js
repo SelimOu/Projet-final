@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { NavLink, useNavigate } from "react-router-dom";
 import Header from '../componants/header';
+import Footer from '../componants/footer';
 
 const Register = () => {
     const navigate = useNavigate();
@@ -179,7 +180,7 @@ const Register = () => {
             <div>
                 <form
                     onSubmit={handleSubmit}
-                    className=" max-w-md bg-white shadow-md rounded-lg p-8 m-14 mt-28"
+                    className=" max-w-md bg-white shadow-md rounded-lg p-8 m-14 mt-36"
                 >
                     <h2 className="text-2xl font-bold mb-6 text-center">Inscription</h2>
 
@@ -373,11 +374,7 @@ const Register = () => {
                     <button className="mt-4 px-4 bg-blue-900 text-white rounded-lg">Connectez-vous</button>
                 </NavLink>
             </div>
-            <footer className="bg-gray-800 text-gray-400 py-8 w-full mt-10">
-                <div className="container mx-auto px-4 text-center ">
-                    <p>&copy; 2024 CoachFinder. Tous droits réservés.</p>
-                </div>
-            </footer>
+            <Footer />
 
         </div>
 

@@ -17,4 +17,3 @@ class Goal extends Model
     }
 }
 
-
