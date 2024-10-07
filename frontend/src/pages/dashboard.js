@@ -149,7 +149,7 @@ const DashboardClient = () => {
             </div>
 
             {userRole !== 'coach' && (
-                <div className="filters mb-6 mt-9 flex justify-center gap-4">
+                <div className="filters mb-6 mt-9 flex justify-center gap-4 m-11">
                     <div>
                         <label htmlFor="select" className="block mb-2">Filtrer par spécialité:</label>
                         <select id="select"

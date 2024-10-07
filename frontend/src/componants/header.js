@@ -40,7 +40,7 @@ const Header = () => {
                 <div className="container mx-auto px-4 flex justify-between items-center h-20">
                     <img className="w-48 pr-4" src="LogoCoachFinder63.png" alt="logo" />
                     <div className="md:hidden">
-                        <button onClick={toggleMenu} className="focus:outline-none">
+                        <button onClick={toggleMenu} className="focus:outline-none" aria-label="Open menu">
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7" />
                             </svg>
@@ -64,7 +64,7 @@ const Header = () => {
                                         <Link to="/dashboard" className="text-gray-700 hover:text-blue-900">Dashboard</Link>
                                     </li>
                                     <li>
-                                        <Link to="/profile" className="text-gray-700 hover:text-blue-900">Modifier mon Profile</Link>
+                                        <Link to="/profile" className="text-gray-700 hover:text-blue-900">Modifier mon Profil</Link>
                                     </li>
                                     <li>
                                         <button onClick={handleLogout} className="text-gray-700 hover:text-blue-900">Se déconnecter</button>
@@ -94,7 +94,7 @@ const Header = () => {
                             {isLoggedIn ? (
                                 <>
                                     <li>
-                                        <Link to="/profile" className="text-gray-700 hover:text-blue-500">Modifier mon Profile</Link>
+                                        <Link to="/profile" className="text-gray-700 hover:text-blue-500">Modifier mon Profil</Link>
                                     </li>
                                     <li>
                                         <Link to="/dashboard" className="text-gray-700 hover:text-blue-500">Dashboard</Link>

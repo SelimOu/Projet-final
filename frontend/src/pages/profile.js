@@ -54,7 +54,7 @@ const Profile = () => {
 
                 setUserId(storedUserId);
 
-                const response = await axios.get(`hhttps://projet-final-jvgt.onrender.com/users/${storedUserId}`, {
+                const response = await axios.get(`https://projet-final-jvgt.onrender.com/api/users/${storedUserId}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                     },
@@ -67,6 +67,7 @@ const Profile = () => {
                     password: '',
                     numero: user.numero || '',
                     price: user.price || '',
+                    city: user.city || '',
                     image: null,
                     goals: user.goals.map(goal => goal.id)
                 });

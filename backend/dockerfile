@@ -16,10 +16,10 @@ RUN chown -R www-data:www-data /var/www/html
 
 RUN composer install --verbose
 
+RUN php artisan storage:link
+
 RUN chown -R www-data:www-data storage bootstrap/cache && \
     chmod -R 775 storage bootstrap/cache
-
-RUN   php artisan storage:link
 
 EXPOSE 1000
 
