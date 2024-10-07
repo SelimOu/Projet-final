@@ -24,7 +24,6 @@ function Login() {
             });
 
             const { token, user } = response.data;
-            console.log('Réponse de l\'API:', response.data);
 
             if (token) {
                 localStorage.setItem('token', token);

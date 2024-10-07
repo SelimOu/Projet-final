@@ -197,7 +197,6 @@ const Profile = () => {
             alert('Profil mis à jour avec succès !');
             navigate('/dashboard');
 
-            console.log('Réponse du serveur:', response.data);
             setErrorMessage('');
 
         } catch (error) {
