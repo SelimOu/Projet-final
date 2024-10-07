@@ -182,11 +182,17 @@ class UserController extends Controller
     public function storeImage(User $user)
     {
         if (request()->hasFile('image')) {
+            // S'assurer que le répertoire 'storage/app/public/images' existe
+            if (!file_exists(storage_path('app/public/images'))) {
+                mkdir(storage_path('app/public/images'), 0755, true);
+            }
+    
             $user->update([
                 'image' => request()->file('image')->store('images', 'public'), 
             ]);
         }
     }
+    
 
     public function updateGoals(Request $request, $id)
     {
