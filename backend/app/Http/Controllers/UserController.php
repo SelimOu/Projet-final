@@ -7,7 +7,7 @@ use App\Models\Schedules;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-
+use Cloudinary\Cloudinary;
 class UserController extends Controller
 {
     public function index()
