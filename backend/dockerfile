@@ -19,9 +19,10 @@ RUN composer install --verbose
 RUN chown -R www-data:www-data storage bootstrap/cache && \
     chmod -R 775 storage bootstrap/cache
 
+RUN   php artisan storage:link && 
+
 EXPOSE 1000
 
 CMD php artisan migrate --force && \
     php artisan config:cache && \
-    php artisan storage:link && \
     php artisan serve --host=0.0.0.0 --port=${PORT:-1000}
