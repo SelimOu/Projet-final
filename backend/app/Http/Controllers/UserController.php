@@ -180,20 +180,19 @@ class UserController extends Controller
     }
 
     public function storeImage(User $user)
-    {
-        // Vérifier si le lien symbolique 'storage' existe
-        if (!file_exists(public_path('storage'))) {
-            // Si le lien n'existe pas, on le recrée
-            \Artisan::call('storage:link');
-        }
-    
-        if (request()->hasFile('image')) {
-            // Stocker l'image dans le répertoire 'public'
-            $user->update([
-                'image' => request()->file('image')->store('images', 'public'), 
-            ]);
-        }
+{
+    if (request()->hasFile('image')) {
+        // Récupérer le fichier de l'image
+        $filePath = request()->file('image')->getRealPath();
+
+        // Télécharger l'image sur Cloudinary
+        $cloudinary = new Cloudinary();
+        $result = $cloudinary->upload($filePath);
+        
+        // Mettre à jour le chemin de l'image dans le profil utilisateur
+        $user->update(['image' => $result->getSecurePath()]);
     }
+}
     
     
 
