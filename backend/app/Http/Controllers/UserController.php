@@ -181,17 +181,20 @@ class UserController extends Controller
 
     public function storeImage(User $user)
     {
-        if (request()->hasFile('image')) {
-            // S'assurer que le répertoire 'storage/app/public/images' existe
-            if (!file_exists(storage_path('app/public/images'))) {
-                mkdir(storage_path('app/public/images'), 0755, true);
-            }
+        // Vérifier si le lien symbolique 'storage' existe
+        if (!file_exists(public_path('storage'))) {
+            // Si le lien n'existe pas, on le recrée
+            \Artisan::call('storage:link');
+        }
     
+        if (request()->hasFile('image')) {
+            // Stocker l'image dans le répertoire 'public'
             $user->update([
                 'image' => request()->file('image')->store('images', 'public'), 
             ]);
         }
     }
+    
     
 
     public function updateGoals(Request $request, $id)
