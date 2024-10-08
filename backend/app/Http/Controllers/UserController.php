@@ -7,7 +7,9 @@ use App\Models\Schedules;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Cloudinary\Cloudinary;
+use Cloudinary\Api\Upload\UploadApi;
+use Cloudinary\Configuration\Configuration;
+
 class UserController extends Controller
 {
     public function index()
@@ -27,7 +29,7 @@ class UserController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
             'role' => 'required|string|in:coach,client',
-            'goals' => 'nullable|array',  
+            'goals' => 'nullable|array',
             'goals.*' => 'exists:goals,id', 
             'numero' => 'required|string|regex:/^0\d{9}$/',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -62,6 +64,8 @@ class UserController extends Controller
         if (!empty($validatedData['goals'])) {
             $user->goals()->attach($validatedData['goals']);
         }
+
+        // Gérer l'upload de l'image
         $this->storeImage($user);
 
         return response()->json($user->load('goals'), 201);
@@ -126,12 +130,13 @@ class UserController extends Controller
         if (isset($validatedData['goals'])) {
             $user->goals()->sync($validatedData['goals']);
         }
-    
+
+        // Gérer l'upload de l'image
         $this->storeImage($user);
     
         return response()->json($user->load('schedule', 'goals'));
     }
-    
+
     public function destroy($id)
     {
         $user = User::findOrFail($id);
@@ -179,32 +184,34 @@ class UserController extends Controller
         return response()->json(['message' => 'Token supprimé'], 200);
     }
 
+    // Méthode pour gérer l'upload de l'image sur Cloudinary
     public function storeImage(User $user)
     {
         if (request()->hasFile('image')) {
-            // Configuration Cloudinary
-            $cloudinary = new Cloudinary([
+            // Configurer Cloudinary avec les informations d'environnement
+            Configuration::instance([
                 'cloud' => [
                     'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
                     'api_key' => env('CLOUDINARY_API_KEY'),
                     'api_secret' => env('CLOUDINARY_API_SECRET'),
                 ],
+                'url' => [
+                    'secure' => true // pour s'assurer que les URL sont sécurisées (https)
+                ]
             ]);
     
             // Récupérer le fichier de l'image
             $filePath = request()->file('image')->getRealPath();
     
-            // Télécharger l'image sur Cloudinary via Uploader
+            // Télécharger l'image sur Cloudinary via l'API d'upload
             $uploadResult = (new UploadApi())->upload($filePath, [
-                'folder' => 'users/' . $user->id,
+                'folder' => 'users/' . $user->id, // Organise les fichiers dans un dossier spécifique
             ]);
     
             // Mettre à jour le chemin de l'image dans le profil utilisateur
             $user->update(['image' => $uploadResult['secure_url']]);
         }
     }
-    
-    
 
     public function updateGoals(Request $request, $id)
     {
