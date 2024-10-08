@@ -180,19 +180,29 @@ class UserController extends Controller
     }
 
     public function storeImage(User $user)
-{
-    if (request()->hasFile('image')) {
-        // Récupérer le fichier de l'image
-        $filePath = request()->file('image')->getRealPath();
-
-        // Télécharger l'image sur Cloudinary
-        $cloudinary = new Cloudinary();
-        $result = $cloudinary->upload($filePath);
-        
-        // Mettre à jour le chemin de l'image dans le profil utilisateur
-        $user->update(['image' => $result->getSecurePath()]);
+    {
+        if (request()->hasFile('image')) {
+            // Configuration Cloudinary
+            $cloudinary = new Cloudinary([
+                'cloud' => [
+                    'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
+                    'api_key' => env('CLOUDINARY_API_KEY'),
+                    'api_secret' => env('CLOUDINARY_API_SECRET'),
+                ],
+            ]);
+    
+            // Récupérer le fichier de l'image
+            $filePath = request()->file('image')->getRealPath();
+    
+            // Télécharger l'image sur Cloudinary via Uploader
+            $uploadResult = (new UploadApi())->upload($filePath, [
+                'folder' => 'users/' . $user->id,
+            ]);
+    
+            // Mettre à jour le chemin de l'image dans le profil utilisateur
+            $user->update(['image' => $uploadResult['secure_url']]);
+        }
     }
-}
     
     
 
