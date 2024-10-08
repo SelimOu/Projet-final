@@ -257,6 +257,18 @@ const Profile = () => {
             }
         }
     };
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
+
+        if (file && validTypes.includes(file.type)) {
+            setFormData({ ...formData, image: file });
+            setErrorMessage('');
+        } else {
+            alert('Veuillez sélectionner une image valide (jpeg, png, jpg, gif).');
+            setFormData({ ...formData, image: null });
+        }
+    };
 
     const daysOfWeek = [
         { value: 'Lundi', label: 'Lundi' },
@@ -316,13 +328,12 @@ const Profile = () => {
                             className="border border-gray-300 rounded p-2 w-full"
                             minLength="8"
                         />
-                        <p className="text-gray-600 text-xs">Laissez vide pour conserver l'ancien mot de passe.</p>
                     </div>
 
                     <div className="mb-4">
                         <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="numero">Numéro de téléphone</label>
                         <input
-                            type="text"
+                            type="number"
                             id="numero"
                             name="numero"
                             value={formData.numero}
@@ -373,6 +384,17 @@ const Profile = () => {
                         {goalsError && (
                             <p className="text-red-500 text-xs italic">{goalsError}</p>
                         )}
+                    </div>
+
+                    <div className="mb-4">
+                        <label className="block text-gray-700" htmlFor="image">Image de profil :</label>
+                        <input
+                            type="file"
+                            name="image"
+                            accept="image/*"
+                            onChange={handleFileChange}
+                            className="w-full mt-1 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-600 focus:outline-none"
+                        />
                     </div>
 
                     {isCoach && (

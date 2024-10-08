@@ -9,7 +9,7 @@ const MentionsLegales = () => {
             <Header />
             <div className="container mt-8 mx-auto px-6 py-10 bg-gray-50 rounded-lg shadow-lg" style={{ fontFamily: 'Arial, sans-serif' }}
             >
-                <h2 className="text-3xl font-semibold mt-8 mb-4 text-gray-700">1. Informations Légales</h2>
+                <h2 className="text-3xl font-semibold mt-8 mb-4 text-gray-700">Informations Légales</h2>
                 <p className="mb-4 text-gray-600">
                     Conformément aux dispositions de la loi n° 2004-575 du 21 juin 2004 pour la confiance en
                     l'économie numérique, il est précisé aux utilisateurs du site <strong>CoachFinder</strong> l'identité
@@ -24,7 +24,7 @@ const MentionsLegales = () => {
                     Email : <a href="mailto:CoachFinder@contact.com" className="text-blue-600 hover:underline">CoachFinder@contact.com</a>
                 </p>
 
-                <h2 className="text-3xl font-semibold mt-8 mb-4 text-gray-700">2. Hébergement</h2>
+                <h2 className="text-3xl font-semibold mt-8 mb-4 text-gray-700">Hébergement</h2>
                 <p className="mb-4 text-gray-600">
                     Le site <strong>CoachFinder</strong> est hébergé par :
                     <br />
@@ -34,14 +34,14 @@ const MentionsLegales = () => {
                     Email : <a href="mailto:contact@render.com" className="text-blue-600 hover:underline">contact@render.com</a>
                 </p>
 
-                <h2 className="text-3xl font-semibold mt-8 mb-4 text-gray-700">3. Nous contacter</h2>
+                <h2 className="text-3xl font-semibold mt-8 mb-4 text-gray-700">Nous contacter</h2>
                 <p className="mb-4 text-gray-600">
                     <strong>Par téléphone :</strong> <a href="tel:+33712345689" className="text-blue-600 hover:underline">+33712345689</a><br />
                     <strong>Par email :</strong> <a href="mailto:CoachFinder@contact.com" className="text-blue-600 hover:underline">CoachFinder@contact.com</a><br />
                     <strong>Par courrier :</strong> 2 rue de l'échappée, 75010 PARIS, France
                 </p>
 
-                <h2 className="text-3xl font-semibold mt-8 mb-4 text-gray-700">4. Données personnelles</h2>
+                <h2 className="text-3xl font-semibold mt-8 mb-4 text-gray-700">Données personnelles</h2>
                 <p className="mb-4 text-gray-600">
                     Le traitement de vos données à caractère personnel est régi par notre{' '}
                     <strong>Charte de Protection des Données Personnelles</strong>, disponible dans la section correspondante
@@ -49,7 +49,7 @@ const MentionsLegales = () => {
                     n° 2016/679 du 27 avril 2016.
                 </p>
 
-                <h2 className="text-3xl font-semibold mt-8 mb-4 text-gray-700">5. Propriété intellectuelle</h2>
+                <h2 className="text-3xl font-semibold mt-8 mb-4 text-gray-700">Propriété intellectuelle</h2>
                 <p className="mb-4 text-gray-600">
                     Le contenu du site <strong>CoachFinder</strong>, incluant, de façon non limitative, les graphismes,
                     images, textes, vidéos, animations, sons, logos, gifs et icônes ainsi que leur mise en forme
@@ -62,7 +62,7 @@ const MentionsLegales = () => {
                     d'Alain Dupont.
                 </p>
 
-                <h2 className="text-3xl font-semibold mt-8 mb-4 text-gray-700">6. Limitations de responsabilité</h2>
+                <h2 className="text-3xl font-semibold mt-8 mb-4 text-gray-700">Limitations de responsabilité</h2>
                 <p className="mb-4 text-gray-600">
                     L'éditeur du site <strong>CoachFinder</strong> ne pourra être tenu responsable des dommages directs
                     et indirects causés au matériel de l'utilisateur lors de l'accès au site, et résultant soit de
@@ -74,7 +74,7 @@ const MentionsLegales = () => {
                     (tels par exemple qu'une perte de marché ou perte d'une chance) consécutifs à l'utilisation du site.
                 </p>
 
-                <h2 className="text-3xl font-semibold mt-8 mb-4 text-gray-700">7. Droit applicable</h2>
+                <h2 className="text-3xl font-semibold mt-8 mb-4 text-gray-700">Droit applicable</h2>
                 <p className="mb-4 text-gray-600">
                     Tout litige en relation avec l’utilisation du site <strong>CoachFinder</strong> est soumis au droit
                     français. Il est fait attribution exclusive de juridiction aux tribunaux compétents de Paris.

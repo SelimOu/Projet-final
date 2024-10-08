@@ -51,7 +51,7 @@ const HomePage = () => {
                 <CoachList />
             </section>
 
-            <section id="contact" className="bg-gray-100 text-black py-20 text-center">
+            <section id="contact" className="bg-white text-black py-20 text-center">
                 <h2 className="text-3xl font-semibold mt-8 mb-4 text-gray-900">Nous contacter</h2>
                 <p className="mb-4 text-black">
                     <strong>Par téléphone :</strong>

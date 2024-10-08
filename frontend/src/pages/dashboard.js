@@ -143,8 +143,8 @@ const DashboardClient = () => {
         <div>
             <Header />
             <div className="flex flex-col items-center justify-center bg-cover bg-center h-screen" style={{ backgroundImage: `url('/imageDashClient.jpg')` }}>
-                <h2 className="text-8xl font-bold pb-5 mb-6 text-center text-white">
-                    {userRole === 'coach' ? 'Tous les Clients' : 'Tous les Coachs'}
+                <h2 className="text-5xl font-bold pb-5 mb-6 text-center text-white lg:text-7xl">
+                    {userRole === 'coach' ? 'Tous les Clients qui cherchent votre spécialitée' : 'Tous les Coachs'}
                 </h2>
             </div>
 
@@ -201,9 +201,7 @@ const DashboardClient = () => {
                             />
                             <h3 className="text-xl font-semibold mb-2">{user.name}</h3>
                             <p className="text-gray-900">Prix : {user.price} €</p>
-                            <p className="text-gray-900">
-                                Spécialités : {user.goals.map(goal => goal.name).join(', ')}
-                            </p>
+                            {user.role === 'coach' ? 'Spécialités' : 'Objectifs'} : {user.goals.map(goal => goal.name).join(', ')}
                             <p className="text-gray-900">Numéro : {user.numero}</p>
                             <p className="text-gray-900">Mail : {user.email}</p>
 
