@@ -195,7 +195,7 @@ const DashboardClient = () => {
                     {currentUsers.map((user) => (
                         <div key={user.id} className="coach-card bg-white rounded-lg shadow-md p-4 flex flex-col items-center w-full lg:w-1/3">
                             <img
-                                src={`https://projet-final-jvgt.onrender.com/storage/${user.image}`}
+                                src={`${user.image}`}
                                 alt={user.name}
                                 className="w-48 h-48 object-cover rounded-full mb-4"
                             />

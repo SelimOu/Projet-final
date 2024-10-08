@@ -3,7 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\User;
-use App\Models\Goal; // Assurez-vous d'importer le modèle Goal
+use App\Models\Goal; 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -16,11 +16,13 @@ class UserFactory extends Factory
     public function definition()
     {
         $images = [
-            '1TLkGbAsSltQQyLtQjF4lGCvwlfdfFUxYfDfrFqp.jpg',
-            'zzsO1IgFZ2149sdVljYwq9mAeuwhyXeeC2DFL21T.jpg',
-            'DuDDA2BccEj8cRL6gq4i10NNA9zzugg6ovJiqPMQ.jpg',
-            'jAoYPHbDaR9ZgAyJwxay2KpsYali9tWBljz8i6H9.jpg',
-            'jz2yTDi88OsdwGlmCAk2xdYBXaKa46l1eQYqNZH8.jpg'
+            'https://res.cloudinary.com/dhispyzf1/image/upload/v1728383454/users/70/nzaooqsjv6nnn1qf8hsk.jpg',
+            'https://res.cloudinary.com/dhispyzf1/image/upload/v1728382592/users/65/zu1wpcwsbh1pcodinohu.jpg',
+            'https://res.cloudinary.com/dhispyzf1/image/upload/v1728383520/users/71/vcoub8grvtndkqagoo9x.jpg',
+            'https://res.cloudinary.com/dhispyzf1/image/upload/v1728383816/users/72/pvsoarkborsuk1vzg676.jpg',
+            'https://res.cloudinary.com/dhispyzf1/image/upload/v1728382592/users/65/zu1wpcwsbh1pcodinohu.jpg',
+            'https://res.cloudinary.com/dhispyzf1/image/upload/v1728383380/users/69/okhob6ezi4p0fjthohea.jpg',
+            'https://res.cloudinary.com/dhispyzf1/image/upload/v1728383052/users/68/jrsylapkh2yflpm8szwz.jpg'
         ];
 
         $cities = [
@@ -56,7 +58,7 @@ class UserFactory extends Factory
             'role' => $this->faker->randomElement(['coach', 'client']),
             'price' => $this->faker->randomFloat(2, 10, 100), 
             'numero' => '0' . $this->faker->numberBetween(100000000, 999999999),
-            'image' => 'images/' . $images[array_rand($images)],
+            'image' =>  $images[array_rand($images)],
             'city' => $this->faker->randomElement($cities), 
             'remember_token' => Str::random(10),
         ];

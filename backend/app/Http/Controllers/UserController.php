@@ -65,7 +65,6 @@ class UserController extends Controller
             $user->goals()->attach($validatedData['goals']);
         }
 
-        // Gérer l'upload de l'image
         $this->storeImage($user);
 
         return response()->json($user->load('goals'), 201);
@@ -131,7 +130,6 @@ class UserController extends Controller
             $user->goals()->sync($validatedData['goals']);
         }
 
-        // Gérer l'upload de l'image
         $this->storeImage($user);
     
         return response()->json($user->load('schedule', 'goals'));
@@ -184,11 +182,9 @@ class UserController extends Controller
         return response()->json(['message' => 'Token supprimé'], 200);
     }
 
-    // Méthode pour gérer l'upload de l'image sur Cloudinary
     public function storeImage(User $user)
     {
         if (request()->hasFile('image')) {
-            // Configurer Cloudinary avec les informations d'environnement
             Configuration::instance([
                 'cloud' => [
                     'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
@@ -196,19 +192,16 @@ class UserController extends Controller
                     'api_secret' => env('CLOUDINARY_API_SECRET'),
                 ],
                 'url' => [
-                    'secure' => true // pour s'assurer que les URL sont sécurisées (https)
+                    'secure' => true 
                 ]
             ]);
     
-            // Récupérer le fichier de l'image
             $filePath = request()->file('image')->getRealPath();
     
-            // Télécharger l'image sur Cloudinary via l'API d'upload
             $uploadResult = (new UploadApi())->upload($filePath, [
-                'folder' => 'users/' . $user->id, // Organise les fichiers dans un dossier spécifique
+                'folder' => 'users/' . $user->id, 
             ]);
     
-            // Mettre à jour le chemin de l'image dans le profil utilisateur
             $user->update(['image' => $uploadResult['secure_url']]);
         }
     }
