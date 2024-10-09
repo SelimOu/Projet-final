@@ -38,7 +38,7 @@ const Header = () => {
         <div className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out ${isVisible ? 'bg-white shadow-lg' : 'bg-transparent opacity-0 pointer-events-none'}`}>
             <header className={`py-6 ${isVisible ? 'opacity-100' : 'opacity-0'} transition-opacity duration-300`}>
                 <div className="container mx-auto px-4 flex justify-between items-center h-20">
-                    <img className="w-48 pr-4" src="LogoCoachFinder63.png" alt="logo" />
+                    <a href="/"><img className="w-48 pr-4" src="CoachTracker.png" alt="logo" /></a>
                     <div className="md:hidden">
                         <button onClick={toggleMenu} className="focus:outline-none" aria-label="Open menu">
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

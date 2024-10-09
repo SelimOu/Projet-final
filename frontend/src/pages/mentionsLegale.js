@@ -12,7 +12,7 @@ const MentionsLegales = () => {
                 <h2 className="text-3xl font-semibold mt-8 mb-4 text-gray-700">Informations Légales</h2>
                 <p className="mb-4 text-gray-600">
                     Conformément aux dispositions de la loi n° 2004-575 du 21 juin 2004 pour la confiance en
-                    l'économie numérique, il est précisé aux utilisateurs du site <strong>CoachFinder</strong> l'identité
+                    l'économie numérique, il est précisé aux utilisateurs du site <strong>CoachTracker</strong> l'identité
                     des différents intervenants dans le cadre de sa réalisation et de son suivi.
                 </p>
                 <p className="mb-4 text-gray-600">
@@ -21,12 +21,12 @@ const MentionsLegales = () => {
                     2 rue de l'échappée, 75010 PARIS, France<br />
                     Nationalité : Française<br />
                     Date de naissance : 23/02/2002<br />
-                    Email : <a href="mailto:CoachFinder@contact.com" className="text-blue-600 hover:underline">CoachFinder@contact.com</a>
+                    Email : <a href="mailto:CoachTracker@contact.com" className="text-blue-600 hover:underline">CoachTracker@contact.com</a>
                 </p>
 
                 <h2 className="text-3xl font-semibold mt-8 mb-4 text-gray-700">Hébergement</h2>
                 <p className="mb-4 text-gray-600">
-                    Le site <strong>CoachFinder</strong> est hébergé par :
+                    Le site <strong>CoachTracker</strong> est hébergé par :
                     <br />
                     <strong>Render</strong><br />
                     2 rue de l'échappée, 75010 PARIS, France<br />
@@ -37,7 +37,7 @@ const MentionsLegales = () => {
                 <h2 className="text-3xl font-semibold mt-8 mb-4 text-gray-700">Nous contacter</h2>
                 <p className="mb-4 text-gray-600">
                     <strong>Par téléphone :</strong> <a href="tel:+33712345689" className="text-blue-600 hover:underline">+33712345689</a><br />
-                    <strong>Par email :</strong> <a href="mailto:CoachFinder@contact.com" className="text-blue-600 hover:underline">CoachFinder@contact.com</a><br />
+                    <strong>Par email :</strong> <a href="mailto:CoachTracker@contact.com" className="text-blue-600 hover:underline">CoachTracker@contact.com</a><br />
                     <strong>Par courrier :</strong> 2 rue de l'échappée, 75010 PARIS, France
                 </p>
 
@@ -51,7 +51,7 @@ const MentionsLegales = () => {
 
                 <h2 className="text-3xl font-semibold mt-8 mb-4 text-gray-700">Propriété intellectuelle</h2>
                 <p className="mb-4 text-gray-600">
-                    Le contenu du site <strong>CoachFinder</strong>, incluant, de façon non limitative, les graphismes,
+                    Le contenu du site <strong>CoachTracker</strong>, incluant, de façon non limitative, les graphismes,
                     images, textes, vidéos, animations, sons, logos, gifs et icônes ainsi que leur mise en forme
                     sont la propriété exclusive d'Alain Dupont, à l'exception des marques, logos ou contenus appartenant
                     à d'autres sociétés partenaires ou auteurs.
@@ -64,26 +64,26 @@ const MentionsLegales = () => {
 
                 <h2 className="text-3xl font-semibold mt-8 mb-4 text-gray-700">Limitations de responsabilité</h2>
                 <p className="mb-4 text-gray-600">
-                    L'éditeur du site <strong>CoachFinder</strong> ne pourra être tenu responsable des dommages directs
+                    L'éditeur du site <strong>CoachTracker</strong> ne pourra être tenu responsable des dommages directs
                     et indirects causés au matériel de l'utilisateur lors de l'accès au site, et résultant soit de
                     l'utilisation d'un matériel ne répondant pas aux spécifications techniques mentionnées, soit de
                     l'apparition d'un bug ou d'une incompatibilité.
                 </p>
                 <p className="mb-4 text-gray-600">
-                    Le site <strong>CoachFinder</strong> ne pourra également être tenu responsable des dommages indirects
+                    Le site <strong>CoachTracker</strong> ne pourra également être tenu responsable des dommages indirects
                     (tels par exemple qu'une perte de marché ou perte d'une chance) consécutifs à l'utilisation du site.
                 </p>
 
                 <h2 className="text-3xl font-semibold mt-8 mb-4 text-gray-700">Droit applicable</h2>
                 <p className="mb-4 text-gray-600">
-                    Tout litige en relation avec l’utilisation du site <strong>CoachFinder</strong> est soumis au droit
+                    Tout litige en relation avec l’utilisation du site <strong>CoachTracker</strong> est soumis au droit
                     français. Il est fait attribution exclusive de juridiction aux tribunaux compétents de Paris.
                 </p>
 
             </div>
             <footer className="bg-gray-800 text-gray-400 py-8">
                 <div className="container mx-auto px-4 text-center">
-                    <p>&copy; 2024 CoachFinder. Tous droits réservés.</p>
+                    <p>&copy; 2024 CoachTracker. Tous droits réservés.</p>
                     <p>
                         <a
                             href="/legals"

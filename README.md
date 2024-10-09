@@ -1,31 +1,28 @@
-# proto-carbon
+# CoachTracker
 
-This is a prototype for a carbon accounting web application. The application is built with docker and uses a React front-end,a Node.js back-end a SQLite databalse to serve the data. The application is built with the following technologies:
+CoachTracker est une app de mise en relation entre des coachSs et des sportifs. L'applicattion est construiteavec docker et utilise React pour le front-end, Laravel pour le back-end, et MySQL et PHPMyADMIN pour la base de donnée, l'application est contruite avec les technologies suivantes : 
 
-- [docker](https://docs.docker.com/engine/install/) to dockerize the app
+- [docker](https://docs.docker.com/engine/install/) Pour conteuneuriser l'app
 
-- [React](https://reactjs.org/) for the front end
+- [React](https://reactjs.org/) Pour le front end
 
-- [Node.js](https://nodejs.org/en/) for the back end
+- [Laravel](https://laravel.com/docs/11.x/installation) pour le back end
 
-- [SQLite](https://www.sqlite.org/) for the data base
+- [MySQL](https://dev.mysql.com/downloads/installer/) pour la base de donnée
 
-- [fastapi](https://fastapi.tiangolo.com/) for the back end (not plugged in yet)
-
-For confidentiality reasons, the clients documents are not included in this repository. 
+- [PHPMyAdmin](https://docs.phpmyadmin.net/fr/latest/setup.html) pour visualiser la base de donnée
 
 ## Prerequisites
 
-- [Node.js](https://nodejs.org/en/) works smoothly on my machine with version 20.12.2, might work with other versions.
-- [npm](https://www.npmjs.com/) works smoothly on my machine with version 10.5.0, might work with other versions.
-- [docker](https://docs.docker.com/engine/install/)  works smoothly on my machine with version 26.1.3, might work with other versions.
+
+- [docker](https://docs.docker.com/engine/install/)  
 
 
 ## Installation & Usage
 
 ```bash
-git clone --branch stage git@github.com:471-FR/proto-carbon.git
-cd proto-carbon/
+git clone git@github.com:SelimOu/Projet-final.git
+cd projet-final/
 ``` 
 
 start the server and the client with
