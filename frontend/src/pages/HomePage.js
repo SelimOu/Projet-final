@@ -1,7 +1,6 @@
 import React from "react";
 import Header from "../componants/header";
 import Footer from "../componants/footer";
-import CoachList from "../componants/coachList";
 
 const HomePage = () => {
     return (
@@ -47,9 +46,7 @@ const HomePage = () => {
                     </a>
                 </div>
             </section>
-            <section>
-                <CoachList />
-            </section>
+
 
             <section id="contact" className="bg-white text-black py-20 text-center">
                 <h2 className="text-3xl font-semibold mt-8 mb-4 text-gray-900">Nous contacter</h2>
