@@ -175,7 +175,7 @@ const Register = () => {
     return (
         <>
             <div className="flex flex-col items-center justify-center w-full bg-gray-100"
-                style={{ backgroundImage: `url('/imageregister.jpg')` }}>
+                style={{ backgroundImage: `url('/imageregister.jpg')`, backgroundSize: 'cover' }}>
                 <Header />
                 <div>
                     <form

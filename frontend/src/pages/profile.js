@@ -281,7 +281,7 @@ const Profile = () => {
     ];
 
     return (
-        <div style={{ backgroundImage: `url('/imageprofile.jpg')` }}>
+        <div style={{ backgroundImage: `url('/imageprofile.jpg')`, backgroundSize: 'cover' }}>
             <Header />
 
             <div className="flex items-center justify-center min-h-screen mt-20 mb-22 mx-10">

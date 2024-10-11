@@ -42,7 +42,7 @@ function Login() {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center bg-cover bg-center h-screen" style={{ backgroundImage: `url('/imagedefond.jpg')` }}>
+        <div className="flex flex-col items-center justify-center bg-cover bg-center h-screen" style={{ backgroundImage: `url('/imagedefond.jpg')`, backgroundSize: 'cover' }}>
             <Header />
             <form onSubmit={handleSubmit} className="w-full max-w-sm bg-white p-8 rounded-lg shadow-md">
                 <div>
