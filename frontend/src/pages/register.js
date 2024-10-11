@@ -368,7 +368,7 @@ const Register = () => {
                         </button>
                     </form>
                 </div>
-                <div className='bg-white shadow-md rounded-lg p-8'>
+                <div className='bg-white shadow-md rounded-lg p-8 mb-4' >
                     <h3 className="mt-6 text-lg">Déjà un compte?</h3>
                     <NavLink to={'/login'}>
                         <button className="mt-4 px-4 bg-blue-900 text-white rounded-lg">Connectez-vous</button>
