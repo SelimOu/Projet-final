@@ -27,9 +27,28 @@ const Header = () => {
         setIsMenuOpen(!isMenuOpen);
     };
 
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        navigate('/');
+    const handleLogout = async () => {
+        const token = localStorage.getItem('token');
+        const userId = localStorage.getItem('userId');
+
+        try {
+            await axios.post('https://projet-final-jvgt.onrender.com/api/logout', {}, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            localStorage.removeItem('token');
+            localStorage.removeItem('userId');
+
+            alert('Déconnecté avec succès');
+
+            navigate('/');
+
+        } catch (error) {
+            console.error("Erreur lors de la déconnexion :", error);
+            alert("Erreur lors de la déconnexion, veuillez réessayer.");
+        }
     };
 
     const isLoggedIn = !!localStorage.getItem('token');
