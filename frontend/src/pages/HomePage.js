@@ -1,6 +1,7 @@
 import React from "react";
 import Header from "../componants/header";
 import Footer from "../componants/footer";
+import ContactForm from "../componants/contactform";
 
 const HomePage = () => {
     return (
@@ -22,7 +23,7 @@ const HomePage = () => {
 
             <section id="about" className="bg-gray-200">
                 <div className="container mx-auto px-4">
-                    <div className="flex flex-col xl:flex-row lg:items-center">
+                    <div className="flex flex-col xl:flex-row max-lg:items-center">
                         <div className="md:w-1/2">
                             <h2 className="pb-20 pt-10 text-4xl">Bienvenue chez CoachTracker</h2>
                             <p className="text-xl pb-8">
@@ -47,18 +48,9 @@ const HomePage = () => {
                 </div>
             </section>
 
-
-            <section id="contact" className="bg-white text-black py-20 text-center">
-                <h2 className="text-3xl font-semibold mt-8 mb-4 text-gray-900">Nous contacter</h2>
-                <p className="mb-4 text-black">
-                    <strong>Par téléphone :</strong>
-                    <a href="tel:+33712345689" className="text-blue-900 hover:underline underline font-semibold">+33712345689</a><br />
-                    <strong>Par email :</strong>
-                    <a href="mailto:CoachTracker@contact.com" className="text-blue-900 hover:underline underline font-semibold">CoachTracker@contact.com</a><br />
-                    <strong>Par courrier :</strong> 2 rue de l'échappée, 75010 PARIS, France
-                </p>
+            <section className="bg-white">
+                <ContactForm />
             </section>
-
 
             <Footer />
 
