@@ -2,8 +2,11 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Header from "../componants/header";
 import Footer from "../componants/footer";
+import { useNavigate } from "react-router-dom";
+
 
 const DashboardClient = () => {
+    const navigate = useNavigate();
     const [users, setUsers] = useState([]);
     const [filteredUsers, setFilteredUsers] = useState([]);
     const [specialtyFilter, setSpecialtyFilter] = useState("");
@@ -17,6 +20,7 @@ const DashboardClient = () => {
     const usersPerPage = 4;
     const [userRole, setUserRole] = useState("");
     const [userGoals, setUserGoals] = useState([]);
+
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -147,7 +151,12 @@ const DashboardClient = () => {
     }
 
     if (error) {
-        return <p>Erreur: {error}</p>;
+        return <div>
+            {navigate('/login')};
+
+        </div>
+
+
     }
 
     return (
