@@ -23,8 +23,8 @@ const HomePage = () => {
 
             <section id="about" className="bg-gray-200">
                 <div className="container mx-auto px-4">
-                    <div className="flex flex-col xl:flex-row max-lg:items-center">
-                        <div className="md:w-1/2">
+                    <div className="flex max-xl:flex-col flex-row max-lg:items-center items-center">
+                        <div className="max-md:w-11/12">
                             <h2 className="pb-20 pt-10 text-4xl">Bienvenue chez CoachTracker</h2>
                             <p className="text-xl pb-8">
                                 Chez CoachTracker, nous mettons en relation les habitants de toute la France avec les meilleurs coachs sportifs français. Que vous cherchiez à améliorer votre forme physique, à atteindre des objectifs spécifiques ou simplement à adopter un mode de vie plus sain, notre plateforme vous permet de trouver le coach qui correspond à vos besoins. Avec un large choix de professionnels qualifiés, vous êtes sûr de recevoir un accompagnement personnalisé et de qualité, tout en soutenant des experts français. Prenez en main votre bien-être avec CoachTracker.
@@ -48,7 +48,7 @@ const HomePage = () => {
                 </div>
             </section>
 
-            <section className="bg-white">
+            <section id="contact" className="bg-white">
                 <ContactForm />
             </section>
 

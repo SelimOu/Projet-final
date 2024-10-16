@@ -1,0 +1,871 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "User Management API",
+        "description": "API for managing users and their goals.",
+        "contact": {
+            "email": "support@example.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/users": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Retrieve all users",
+                "operationId": "c457726701591d1183b53aa71fc13441",
+                "responses": {
+                    "200": {
+                        "description": "List of users retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/User"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Create a new user",
+                "operationId": "592819a0265360b2014512d6dbfaf0e7",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "password",
+                                    "role",
+                                    "numero"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "john.doe@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "SecurePass123"
+                                    },
+                                    "role": {
+                                        "type": "string",
+                                        "enum": [
+                                            "coach",
+                                            "client"
+                                        ],
+                                        "example": "client"
+                                    },
+                                    "numero": {
+                                        "type": "string",
+                                        "pattern": "^0\\d{9}$",
+                                        "example": "0123456789"
+                                    },
+                                    "goals": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        },
+                                        "example": [
+                                            1,
+                                            2,
+                                            3
+                                        ]
+                                    },
+                                    "price": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 99.99,
+                                        "nullable": true
+                                    },
+                                    "city": {
+                                        "type": "string",
+                                        "example": "Paris",
+                                        "nullable": true
+                                    },
+                                    "day_start": {
+                                        "type": "string",
+                                        "enum": [
+                                            "Lundi",
+                                            "Mardi",
+                                            "Mercredi",
+                                            "Jeudi",
+                                            "Vendredi",
+                                            "Samedi",
+                                            "Dimanche"
+                                        ],
+                                        "example": "Lundi",
+                                        "nullable": true
+                                    },
+                                    "day_end": {
+                                        "type": "string",
+                                        "enum": [
+                                            "Lundi",
+                                            "Mardi",
+                                            "Mercredi",
+                                            "Jeudi",
+                                            "Vendredi",
+                                            "Samedi",
+                                            "Dimanche"
+                                        ],
+                                        "example": "Vendredi",
+                                        "nullable": true
+                                    },
+                                    "hour_start": {
+                                        "type": "string",
+                                        "format": "time",
+                                        "example": "09:00",
+                                        "nullable": true
+                                    },
+                                    "hour_end": {
+                                        "type": "string",
+                                        "format": "time",
+                                        "example": "17:00",
+                                        "nullable": true
+                                    },
+                                    "image": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "User created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Email already in use",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "L'email est déjà utilisé"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/users/{id}": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Retrieve a user by ID",
+                "operationId": "36a33ff774d5cba33c039dec2c3e0287",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the user to retrieve",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User details retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Update an existing user",
+                "operationId": "b9091397c8b25f12c6adb74be6ce3a5a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the user to update",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Jane Doe"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "jane.doe@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "NewSecurePass456"
+                                    },
+                                    "role": {
+                                        "type": "string",
+                                        "enum": [
+                                            "coach",
+                                            "client"
+                                        ],
+                                        "example": "coach"
+                                    },
+                                    "price": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 149.99,
+                                        "nullable": true
+                                    },
+                                    "goals": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        },
+                                        "example": [
+                                            2,
+                                            3,
+                                            4
+                                        ]
+                                    },
+                                    "numero": {
+                                        "type": "string",
+                                        "pattern": "^0\\d{9}$",
+                                        "example": "0987654321",
+                                        "nullable": true
+                                    },
+                                    "image": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "nullable": true
+                                    },
+                                    "city": {
+                                        "type": "string",
+                                        "example": "Lyon",
+                                        "nullable": true
+                                    },
+                                    "day_start": {
+                                        "type": "string",
+                                        "enum": [
+                                            "Lundi",
+                                            "Mardi",
+                                            "Mercredi",
+                                            "Jeudi",
+                                            "Vendredi",
+                                            "Samedi",
+                                            "Dimanche"
+                                        ],
+                                        "example": "Mardi",
+                                        "nullable": true
+                                    },
+                                    "day_end": {
+                                        "type": "string",
+                                        "enum": [
+                                            "Lundi",
+                                            "Mardi",
+                                            "Mercredi",
+                                            "Jeudi",
+                                            "Vendredi",
+                                            "Samedi",
+                                            "Dimanche"
+                                        ],
+                                        "example": "Samedi",
+                                        "nullable": true
+                                    },
+                                    "hour_start": {
+                                        "type": "string",
+                                        "format": "time",
+                                        "example": "10:00",
+                                        "nullable": true
+                                    },
+                                    "hour_end": {
+                                        "type": "string",
+                                        "format": "time",
+                                        "example": "18:00",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "User updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Email already in use",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "L'email est déjà utilisé"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Delete a user",
+                "operationId": "fa56cffde745d3f152f95cbacd936c0b",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the user to delete",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User and schedule deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Utilisateur et horaire supprimés avec succès"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Authenticate a user and retrieve a token",
+                "operationId": "0fc9610184083ac6dddab2c63139225a",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "john.doe@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "SecurePass123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "user": {
+                                            "$ref": "#/components/schemas/User"
+                                        },
+                                        "token": {
+                                            "type": "string",
+                                            "example": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid credentials",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Les informations d'identification fournies sont incorrectes"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/logout": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Logout the authenticated user",
+                "operationId": "67d5147477c548bfbc3f982833bbc7bd",
+                "responses": {
+                    "200": {
+                        "description": "Logout successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Token supprimé"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "User not authenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Utilisateur non authentifié"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/users/{id}/goals": {
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Update goals for a user",
+                "operationId": "ad5a3cd2b55c1505ceadbf84daee8ba5",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the user",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "goals"
+                                ],
+                                "properties": {
+                                    "goals": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        },
+                                        "example": [
+                                            2,
+                                            3,
+                                            4
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Goals updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Goals updated successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Goal": {
+                "required": [
+                    "name"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "Identifiant unique de l'objectif",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "description": "Nom de l'objectif",
+                        "type": "string",
+                        "example": "Apprendre PHP"
+                    },
+                    "users": {
+                        "description": "Liste des utilisateurs associés à cet objectif",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/User"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "Schedule": {
+                "required": [
+                    "day_start",
+                    "day_end",
+                    "hour_start",
+                    "hour_end",
+                    "user_id"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "Identifiant unique de l'horaire",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "day_start": {
+                        "description": "Jour de début de l'horaire",
+                        "type": "string",
+                        "example": "Lundi"
+                    },
+                    "day_end": {
+                        "description": "Jour de fin de l'horaire",
+                        "type": "string",
+                        "example": "Vendredi"
+                    },
+                    "hour_start": {
+                        "description": "Heure de début de l'horaire au format H:i",
+                        "type": "string",
+                        "example": "09:00"
+                    },
+                    "hour_end": {
+                        "description": "Heure de fin de l'horaire au format H:i",
+                        "type": "string",
+                        "example": "17:00"
+                    },
+                    "user_id": {
+                        "description": "Identifiant de l'utilisateur associé à cet horaire",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "user": {
+                        "$ref": "#/components/schemas/User"
+                    }
+                },
+                "type": "object"
+            },
+            "User": {
+                "required": [
+                    "name",
+                    "email",
+                    "password",
+                    "role"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "Identifiant unique de l'utilisateur",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "description": "Nom de l'utilisateur",
+                        "type": "string",
+                        "example": "John Doe"
+                    },
+                    "email": {
+                        "description": "Adresse e-mail de l'utilisateur",
+                        "type": "string",
+                        "format": "email",
+                        "example": "john.doe@example.com"
+                    },
+                    "password": {
+                        "description": "Mot de passe de l'utilisateur",
+                        "type": "string",
+                        "example": "Password123"
+                    },
+                    "role": {
+                        "description": "Rôle de l'utilisateur (coach ou client)",
+                        "type": "string",
+                        "enum": [
+                            "coach",
+                            "client"
+                        ],
+                        "example": "client"
+                    },
+                    "price": {
+                        "description": "Prix associé à l'utilisateur",
+                        "type": "number",
+                        "format": "float",
+                        "example": 99.99,
+                        "nullable": true
+                    },
+                    "numero": {
+                        "description": "Numéro de téléphone de l'utilisateur",
+                        "type": "string",
+                        "pattern": "^0\\d{9}$",
+                        "example": "0123456789"
+                    },
+                    "image": {
+                        "description": "URL de l'image de profil de l'utilisateur",
+                        "type": "string",
+                        "format": "uri",
+                        "example": "https://res.cloudinary.com/your-cloud-name/image/upload/v1234567890/users/1/profile.jpg",
+                        "nullable": true
+                    },
+                    "city": {
+                        "description": "Ville de résidence de l'utilisateur",
+                        "type": "string",
+                        "example": "Paris",
+                        "nullable": true
+                    },
+                    "schedule": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/Schedule"
+                            }
+                        ],
+                        "nullable": true,
+                        "description": "Planning associé à l'utilisateur",
+                        "type": "object"
+                    },
+                    "goals": {
+                        "description": "Liste des objectifs associés à l'utilisateur",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Goal"
+                        }
+                    },
+                    "profile_photo_url": {
+                        "description": "URL de la photo de profil de l'utilisateur",
+                        "type": "string",
+                        "format": "uri"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "description": "Utiliser un token d'accès JWT pour accéder aux endpoints protégés",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "User",
+            "description": "User"
+        },
+        {
+            "name": "Auth",
+            "description": "Auth"
+        }
+    ]
+}

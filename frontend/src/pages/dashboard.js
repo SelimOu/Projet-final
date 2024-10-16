@@ -132,7 +132,18 @@ const DashboardClient = () => {
     };
 
     if (loading) {
-        return <p>Chargement...</p>;
+        return (
+            <div className="h-screen flex justify-center items-center" style={{ backgroundImage: `url('/imageflou.png')` }}>
+                <div>
+                    <img
+                        className=" animate-spin m-auto w-3/5 "
+                        src="CoachTracker.png"
+                        alt="logo"
+                    />
+                    <p className="text-center text-white text-4xl">Chargement ...</p>
+                </div>
+            </div>
+        );
     }
 
     if (error) {

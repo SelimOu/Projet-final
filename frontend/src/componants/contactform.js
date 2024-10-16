@@ -5,43 +5,49 @@ const ContactForm = () => {
     const [formData, setFormData] = useState({
         name: '',
         email: '',
-        message: ''
+        message: '',
+        consent: false  // Nouvelle propriété pour la checkbox
     });
     const [isSent, setIsSent] = useState(false);
 
     const handleChange = (e) => {
+        const { name, value, type, checked } = e.target;
         setFormData({
             ...formData,
-            [e.target.name]: e.target.value
+            [name]: type === 'checkbox' ? checked : value  // Gérer checkbox séparément
         });
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        emailjs.send(
-            'service_f4x7se4',
-            'template_dshuoae',
-            formData,
-            'eyPGK1wSWJ_spYcEA'
-        )
-            .then((response) => {
-                console.log('SUCCESS!', response.status, response.text);
-                setIsSent(true);
-                setFormData({
-                    name: '',
-                    email: '',
-                    message: ''
+        // Vérifier si la case est cochée avant d'envoyer l'e-mail
+        if (formData.consent) {
+            emailjs.send(
+                'service_f4x7se4',    // Ton service ID
+                'template_dshuoae',   // Ton template ID
+                formData,
+                'eyPGK1wSWJ_spYcEA'   // Ton User ID
+            )
+                .then((response) => {
+                    console.log('SUCCESS!', response.status, response.text);
+                    setIsSent(true);
+                    setFormData({
+                        name: '',
+                        email: '',
+                        message: '',
+                        consent: false  // Reset de la checkbox
+                    });
+                })
+                .catch((err) => {
+                    console.log('FAILED...', err);
                 });
-            })
-            .catch((err) => {
-                console.log('FAILED...', err);
-            });
+        }
     };
 
     return (
         <div className="max-w-md mx-auto mt-10 p-8 bg-white shadow-lg rounded-lg mb-5">
-            <h2 className="text-2xl font-bold mb-6 ">Formulaire de contact</h2>
+            <h2 className="text-2xl font-bold mb-6">Formulaire de contact</h2>
             <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
                     <label className="block text-sm font-medium text-gray-700">Nom:</label>
@@ -76,9 +82,24 @@ const ContactForm = () => {
                     />
                 </div>
                 <div>
+                    <label className="inline-flex items-center">
+                        <input
+                            type="checkbox"
+                            name="consent"
+                            checked={formData.consent}
+                            onChange={handleChange}
+                            required
+                            className="form-checkbox h-4 w-4 text-blue-900"
+                        />
+                        <span className="ml-2 text-gray-700">J'accepte que mes données soient collectées et utilisées.</span>
+                    </label>
+                </div>
+                <div>
                     <button
                         type="submit"
-                        className="w-full bg-blue-900 text-white py-2 px-4 rounded-md hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-900">
+                        disabled={!formData.consent}
+                        className={`w-full py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 
+                                    ${formData.consent ? 'bg-blue-900 text-white hover:bg-blue-800 focus:ring-blue-900' : 'bg-gray-400 text-white cursor-not-allowed'}`}>
                         Envoyer
                     </button>
                 </div>
