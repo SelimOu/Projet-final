@@ -112,7 +112,7 @@ class UserController extends Controller
         'goals' => 'nullable|array',
         'goals.*' => 'exists:goals,id',
         'numero' => 'required|string|regex:/^0\d{9}$/',
-        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', 
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,heic|max:2048', 
         'price' => 'nullable|numeric',
         'city' => 'nullable|string|max:255',
         'day_start' => 'nullable|string|in:Lundi,Mardi,Mercredi,Jeudi,Vendredi,Samedi,Dimanche',
@@ -480,40 +480,50 @@ class UserController extends Controller
      * @return void
      */
 
-    public function storeImage(User $user)
-    {
-    if (request()->hasFile('image')) {
-        Configuration::instance([
-            'cloud' => [
-                'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
-                'api_key' => env('CLOUDINARY_API_KEY'),
-                'api_secret' => env('CLOUDINARY_API_SECRET'),
-            ],
-            'url' => [
-                'secure' => true
-            ]
-        ]);
-
-        $image = request()->file('image');
-        $filePath = $image->getRealPath();
-
-        $resizedImage = Image::make($filePath)->orientate()->resize(1024, null, function ($constraint) {
-            $constraint->aspectRatio(); 
-        });
-
-        $tempPath = tempnam(sys_get_temp_dir(), 'upload');
-        $resizedImage->save($tempPath);
-
-        try {
-            $uploadResult = (new UploadApi())->upload($tempPath, [
-                'folder' => 'users/' . $user->id,
-            ]);
-
-            $user->update(['image' => $uploadResult['secure_url']]);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Image upload failed: ' . $e->getMessage()], 500);
-        }
-    }
-}
+     use Intervention\Image\Facades\Image;
+     use Cloudinary\Api\Upload\UploadApi;
+     
+     public function storeImage(User $user)
+     {
+         if (request()->hasFile('image')) {
+             // Configuration de Cloudinary
+             Configuration::instance([
+                 'cloud' => [
+                     'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
+                     'api_key' => env('CLOUDINARY_API_KEY'),
+                     'api_secret' => env('CLOUDINARY_API_SECRET'),
+                 ],
+                 'url' => [
+                     'secure' => true
+                 ]
+             ]);
+     
+             // Récupération de l'image
+             $image = request()->file('image');
+             $filePath = $image->getRealPath();
+     
+             // Redimensionner et corriger l'orientation de l'image
+             $resizedImage = Image::make($filePath)->orientate()->resize(1024, null, function ($constraint) {
+                 $constraint->aspectRatio(); // Maintenir le ratio d'aspect
+             })->encode('jpg', 75); // Compression à 75% pour réduire la taille du fichier
+     
+             // Sauvegarder l'image temporairement pour l'upload
+             $tempPath = tempnam(sys_get_temp_dir(), 'upload');
+             $resizedImage->save($tempPath);
+     
+             try {
+                 // Upload sur Cloudinary
+                 $uploadResult = (new UploadApi())->upload($tempPath, [
+                     'folder' => 'users/' . $user->id,
+                 ]);
+     
+                 // Mise à jour de l'URL de l'image dans la base de données
+                 $user->update(['image' => $uploadResult['secure_url']]);
+             } catch (\Exception $e) {
+                 return response()->json(['message' => 'Image upload failed: ' . $e->getMessage()], 500);
+             }
+         }
+     }
+     
 
 }
