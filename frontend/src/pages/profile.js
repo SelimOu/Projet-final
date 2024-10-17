@@ -39,11 +39,7 @@ const Profile = () => {
     useEffect(() => {
         const fetchUserData = async () => {
             const token = localStorage.getItem('token');
-            if (!token) {
-                alert('Vous devez vous connecter pour accéder à cette page.');
-                navigate('/login');
-                return;
-            }
+
 
             try {
                 const storedUserId = localStorage.getItem('userId');
@@ -81,11 +77,7 @@ const Profile = () => {
                 setGoalsList(goalsData);
 
             } catch (error) {
-                console.error('Erreur lors de la récupération des données utilisateur:', error);
-                if (error.response && error.response.status === 401) {
-                    alert('Vous devez vous connecter pour accéder à cette page.');
-                    navigate('/login');
-                }
+
             }
         };
 

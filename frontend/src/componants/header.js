@@ -8,8 +8,29 @@ const Header = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const navigate = useNavigate();
 
+    useEffect(() => {
+        const interceptor = axios.interceptors.response.use(
+            response => response,
+            error => {
+                if (error.response && error.response.status === 401) {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('userId');
+                    navigate('/login');
+                    alert("Session expirée, veuillez vous reconnecter.");
+                }
+                return Promise.reject(error);
+            }
+        );
+
+        return () => {
+            axios.interceptors.response.eject(interceptor);
+        };
+    }, [navigate]);
+
     const handleScroll = () => {
-        if (window.scrollY < lastScrollY && window.scrollY > 100) {
+        if (window.scrollY === 0) {
+            setIsVisible(true);  // Toujours visible tout en haut
+        } else if (window.scrollY < lastScrollY && window.scrollY > 100) {
             setIsVisible(true);
         } else if (window.scrollY > lastScrollY) {
             setIsVisible(false);
@@ -30,7 +51,6 @@ const Header = () => {
 
     const handleLogout = async () => {
         const token = localStorage.getItem('token');
-        const userId = localStorage.getItem('userId');
 
         try {
             await axios.post('https://projet-final-jvgt.onrender.com/api/logout', {}, {
@@ -43,12 +63,12 @@ const Header = () => {
             localStorage.removeItem('userId');
 
             alert('Déconnecté avec succès');
-
             navigate('/');
-
         } catch (error) {
-            console.error("Erreur lors de la déconnexion :", error);
-            alert("Erreur lors de la déconnexion, veuillez réessayer.");
+            localStorage.removeItem('token');
+            localStorage.removeItem('userId');
+            alert('Déconnecté avec succès');
+            navigate('/');
         }
     };
 

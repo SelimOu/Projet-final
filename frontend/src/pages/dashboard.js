@@ -151,11 +151,10 @@ const DashboardClient = () => {
     }
 
     if (error) {
-        return <div>
-            {navigate('/login')};
-
-        </div>
-
+        localStorage.removeItem('token');
+        localStorage.removeItem('userId');
+        navigate('/login');
+        alert("Session expirée, veuillez vous reconnecter.");
 
     }
 

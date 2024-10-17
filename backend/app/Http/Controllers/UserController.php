@@ -250,7 +250,7 @@ class UserController extends Controller
             'goals' => 'nullable|array',
             'goals.*' => 'exists:goals,id',
             'numero' => 'nullable|string|regex:/^0\d{9}$/',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => 'nullable',
             'city' => 'nullable|string|max:255', 
             'day_start' => 'nullable|string|in:Lundi,Mardi,Mercredi,Jeudi,Vendredi,Samedi,Dimanche',
             'day_end' => 'nullable|string|in:Lundi,Mardi,Mercredi,Jeudi,Vendredi,Samedi,Dimanche',

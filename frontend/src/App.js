@@ -6,11 +6,9 @@ import Register from './pages/register';
 import Dashboard from './pages/dashboard';
 import Profile from './pages/profile';
 import MentionsLegales from './pages/mentionsLegale';
-import axios from 'axios';
 
 function App() {
   const location = useLocation();
-  const navigate = useNavigate();
   const isAuthenticated = !!localStorage.getItem('token');
 
   useEffect(() => {
