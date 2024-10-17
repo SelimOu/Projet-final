@@ -483,35 +483,43 @@ class UserController extends Controller
      use Intervention\Image\Facades\Image;
      use Cloudinary\Api\Upload\UploadApi;
      
+     use Intervention\Image\Facades\Image;
+
      public function storeImage(User $user)
      {
          if (request()->hasFile('image')) {
-             // Configuration de Cloudinary
-             Configuration::instance([
-                 'cloud' => [
-                     'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
-                     'api_key' => env('CLOUDINARY_API_KEY'),
-                     'api_secret' => env('CLOUDINARY_API_SECRET'),
-                 ],
-                 'url' => [
-                     'secure' => true
-                 ]
-             ]);
-     
              // Récupération de l'image
              $image = request()->file('image');
-             $filePath = $image->getRealPath();
      
-             // Redimensionner et corriger l'orientation de l'image
-             $resizedImage = Image::make($filePath)->orientate()->resize(1024, null, function ($constraint) {
-                 $constraint->aspectRatio(); // Maintenir le ratio d'aspect
-             })->encode('jpg', 75); // Compression à 75% pour réduire la taille du fichier
+             // Vérification du type MIME
+             $mimeType = $image->getMimeType();
+             dd($mimeType); // Débogage pour voir le type MIME
+     
+             // Redimensionner et corriger l'orientation
+             $resizedImage = Image::make($image->getRealPath())
+                 ->orientate() // Corrige l'orientation
+                 ->resize(1024, null, function ($constraint) {
+                     $constraint->aspectRatio(); // Maintenir le ratio d'aspect
+                 })
+                 ->encode('jpg', 75); // Compression à 75% pour réduire la taille du fichier
      
              // Sauvegarder l'image temporairement pour l'upload
              $tempPath = tempnam(sys_get_temp_dir(), 'upload');
              $resizedImage->save($tempPath);
      
              try {
+                 // Configuration de Cloudinary
+                 Configuration::instance([
+                     'cloud' => [
+                         'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
+                         'api_key' => env('CLOUDINARY_API_KEY'),
+                         'api_secret' => env('CLOUDINARY_API_SECRET'),
+                     ],
+                     'url' => [
+                         'secure' => true
+                     ]
+                 ]);
+     
                  // Upload sur Cloudinary
                  $uploadResult = (new UploadApi())->upload($tempPath, [
                      'folder' => 'users/' . $user->id,
@@ -525,5 +533,4 @@ class UserController extends Controller
          }
      }
      
-
 }
