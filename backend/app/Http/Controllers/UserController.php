@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Cloudinary\Api\Upload\UploadApi;
 use Cloudinary\Configuration\Configuration;
+use Intervention\Image\Facades\Image;
+
 
 
 /**
@@ -97,56 +99,56 @@ class UserController extends Controller
      * )
      */
     public function store(Request $request)
-    {
-        if (User::where('email', $request->email)->exists()) {
-            return response()->json(['message' => 'L\'email est déjà utilisé'], 400);
-        }
-
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
-            'role' => 'required|string|in:coach,client',
-            'goals' => 'nullable|array',
-            'goals.*' => 'exists:goals,id', 
-            'numero' => 'required|string|regex:/^0\d{9}$/',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'price' => 'nullable|numeric', 
-            'city' => 'nullable|string|max:255', 
-            'day_start' => 'nullable|string|in:Lundi,Mardi,Mercredi,Jeudi,Vendredi,Samedi,Dimanche',
-            'day_end' => 'nullable|string|in:Lundi,Mardi,Mercredi,Jeudi,Vendredi,Samedi,Dimanche',
-            'hour_start' => 'nullable|date_format:H:i',
-            'hour_end' => 'nullable|date_format:H:i',
-        ]);
-
-        $user = User::create([
-            'name' => $validatedData['name'],
-            'email' => $validatedData['email'],
-            'password' => Hash::make($validatedData['password']),
-            'role' => $validatedData['role'],
-            'numero' => $validatedData['numero'],
-            'price' => $validatedData['price'] ?? null, 
-            'city' => $validatedData['city'] ?? null, 
-        ]);
-
-        if ($user->role === 'coach') {
-            Schedules::create([
-                'user_id' => $user->id,
-                'day_start' => $validatedData['day_start'],
-                'day_end' => $validatedData['day_end'],
-                'hour_start' => $validatedData['hour_start'],
-                'hour_end' => $validatedData['hour_end'],
-            ]);
-        }
-
-        if (!empty($validatedData['goals'])) {
-            $user->goals()->attach($validatedData['goals']);
-        }
-
-        $this->storeImage($user);
-
-        return response()->json($user->load('goals'), 201);
+{
+    if (User::where('email', $request->email)->exists()) {
+        return response()->json(['message' => 'L\'email est déjà utilisé'], 400);
     }
+
+    $validatedData = $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|string|email|max:255|unique:users',
+        'password' => 'required|string|min:8',
+        'role' => 'required|string|in:coach,client',
+        'goals' => 'nullable|array',
+        'goals.*' => 'exists:goals,id',
+        'numero' => 'required|string|regex:/^0\d{9}$/',
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', 
+        'price' => 'nullable|numeric',
+        'city' => 'nullable|string|max:255',
+        'day_start' => 'nullable|string|in:Lundi,Mardi,Mercredi,Jeudi,Vendredi,Samedi,Dimanche',
+        'day_end' => 'nullable|string|in:Lundi,Mardi,Mercredi,Jeudi,Vendredi,Samedi,Dimanche',
+        'hour_start' => 'nullable|date_format:H:i',
+        'hour_end' => 'nullable|date_format:H:i',
+    ]);
+
+    $user = User::create([
+        'name' => $validatedData['name'],
+        'email' => $validatedData['email'],
+        'password' => Hash::make($validatedData['password']),
+        'role' => $validatedData['role'],
+        'numero' => $validatedData['numero'],
+        'price' => $validatedData['price'] ?? null,
+        'city' => $validatedData['city'] ?? null,
+    ]);
+
+    if ($user->role === 'coach') {
+        Schedules::create([
+            'user_id' => $user->id,
+            'day_start' => $validatedData['day_start'],
+            'day_end' => $validatedData['day_end'],
+            'hour_start' => $validatedData['hour_start'],
+            'hour_end' => $validatedData['hour_end'],
+        ]);
+    }
+
+    if (!empty($validatedData['goals'])) {
+        $user->goals()->attach($validatedData['goals']);
+    }
+
+    $this->storeImage($user);
+
+    return response()->json($user->load('goals'), 201);
+}
 
     /**
      * @OA\Get(
@@ -250,7 +252,7 @@ class UserController extends Controller
             'goals' => 'nullable|array',
             'goals.*' => 'exists:goals,id',
             'numero' => 'nullable|string|regex:/^0\d{9}$/',
-            'image' => 'nullable',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'city' => 'nullable|string|max:255', 
             'day_start' => 'nullable|string|in:Lundi,Mardi,Mercredi,Jeudi,Vendredi,Samedi,Dimanche',
             'day_end' => 'nullable|string|in:Lundi,Mardi,Mercredi,Jeudi,Vendredi,Samedi,Dimanche',
@@ -477,31 +479,41 @@ class UserController extends Controller
      * @param \App\Models\User $user
      * @return void
      */
+
     public function storeImage(User $user)
     {
-        if (request()->hasFile('image')) {
-            Configuration::instance([
-                'cloud' => [
-                    'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
-                    'api_key' => env('CLOUDINARY_API_KEY'),
-                    'api_secret' => env('CLOUDINARY_API_SECRET'),
-                ],
-                'url' => [
-                    'secure' => true 
-                ]
+    if (request()->hasFile('image')) {
+        Configuration::instance([
+            'cloud' => [
+                'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
+                'api_key' => env('CLOUDINARY_API_KEY'),
+                'api_secret' => env('CLOUDINARY_API_SECRET'),
+            ],
+            'url' => [
+                'secure' => true
+            ]
+        ]);
+
+        $image = request()->file('image');
+        $filePath = $image->getRealPath();
+
+        $resizedImage = Image::make($filePath)->orientate()->resize(1024, null, function ($constraint) {
+            $constraint->aspectRatio(); 
+        });
+
+        $tempPath = tempnam(sys_get_temp_dir(), 'upload');
+        $resizedImage->save($tempPath);
+
+        try {
+            $uploadResult = (new UploadApi())->upload($tempPath, [
+                'folder' => 'users/' . $user->id,
             ]);
 
-            $filePath = request()->file('image')->getRealPath();
-
-            try {
-                $uploadResult = (new UploadApi())->upload($filePath, [
-                    'folder' => 'users/' . $user->id, 
-                ]);
-
-                $user->update(['image' => $uploadResult['secure_url']]);
-            } catch (\Exception $e) {
-                return response()->json(['message' => 'Image upload failed: ' . $e->getMessage()], 500);
-            }
+            $user->update(['image' => $uploadResult['secure_url']]);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Image upload failed: ' . $e->getMessage()], 500);
         }
     }
+}
+
 }

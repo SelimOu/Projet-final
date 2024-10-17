@@ -9,6 +9,7 @@
         "cloudinary-labs/cloudinary-laravel": "^2.2",
         "cloudinary/cloudinary_php": "^2.14",
         "darkaonline/l5-swagger": "^8.6",
+        "intervention/image": "^3.8",
         "laravel/framework": "^11.9",
         "laravel/jetstream": "^5.1",
         "laravel/sanctum": "^4.0",
