@@ -151,7 +151,7 @@ const Register = () => {
         });
 
         try {
-            await axios.post('https://projet-final-jvgt.onrender.com/api/users', data, {
+            await axios.post('http://localhost:9200/api/users', data, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
