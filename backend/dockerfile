@@ -6,6 +6,12 @@ RUN apt-get update && \
     apt-get install -y libzip-dev unzip git && \
     docker-php-ext-install pdo pdo_mysql zip
 
+# Modifier le php.ini pour changer les valeurs de upload_max_filesize et post_max_size
+RUN { \
+    echo 'upload_max_filesize = 10M'; \
+    echo 'post_max_size = 12M'; \
+    } > /usr/local/etc/php/conf.d/custom.ini
+
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 COPY backend/ /var/www/html
