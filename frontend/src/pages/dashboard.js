@@ -219,13 +219,13 @@ const DashboardClient = () => {
                                 className="w-48 h-48 object-cover rounded-full mb-4"
                             />
                             <h3 className="text-xl font-semibold mb-2">{user.name}</h3>
-                            <p className="text-gray-900">Prix : {user.price} €</p>
                             {user.role === 'coach' ? 'Spécialités' : 'Objectifs'} : {user.goals.map(goal => goal.name).join(', ')}
                             <p className="text-gray-900">Numéro : {user.numero}</p>
                             <p className="text-gray-900">Mail : {user.email}</p>
 
                             {user.role === 'coach' && (
                                 <>
+                                    <p className="text-gray-900">Prix : {user.price} €</p>
                                     <p className="text-gray-900">Ville : {user.city}</p>
                                     {user.schedule && (
                                         <div className="mt-4">
@@ -240,7 +240,7 @@ const DashboardClient = () => {
                 </div>
             )}
 
-            <div className="pagination flex justify-center mt-6">
+            <div className="pagination flex justify-center mt-6 mb-4">
                 <button
                     onClick={handlePreviousPage}
                     disabled={currentPage === 1}
