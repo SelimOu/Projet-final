@@ -163,7 +163,7 @@ const DashboardClient = () => {
             <Header />
             <div className="flex flex-col items-center justify-center bg-cover bg-center h-screen" style={{ backgroundImage: `url('/imageDashClient.jpg')` }}>
                 <h2 className="text-5xl font-bold pb-5 mb-6 text-center text-white lg:text-7xl">
-                    {userRole === 'coach' ? 'Tous les Clients qui cherchent votre spécialitée' : 'Tous les Coachs'}
+                    {userRole === 'coach' ? 'Tous les Clients qui cherchent votre spécialité' : 'Tous les Coachs'}
                 </h2>
             </div>
 

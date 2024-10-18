@@ -98,12 +98,10 @@ class UserController extends Controller
      */
     public function store(Request $request)
 {
-    // Vérifie si l'email existe déjà
     if (User::where('email', $request->email)->exists()) {
         return response()->json(['message' => 'L\'email est déjà utilisé'], 400);
     }
 
-    // Validation des données
     $validatedData = $request->validate([
         'name' => 'required|string|max:255',
         'email' => 'required|string|email|max:255|unique:users',
@@ -112,7 +110,7 @@ class UserController extends Controller
         'goals' => 'nullable|array',
         'goals.*' => 'exists:goals,id',
         'numero' => 'required|string|regex:/^0\d{9}$/',
-        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Image validation
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240', 
         'price' => 'nullable|numeric',
         'city' => 'nullable|string|max:255',
         'day_start' => 'nullable|string|in:Lundi,Mardi,Mercredi,Jeudi,Vendredi,Samedi,Dimanche',
@@ -121,7 +119,6 @@ class UserController extends Controller
         'hour_end' => 'nullable|date_format:H:i',
     ]);
 
-    // Création de l'utilisateur
     $user = User::create([
         'name' => $validatedData['name'],
         'email' => $validatedData['email'],
@@ -132,7 +129,6 @@ class UserController extends Controller
         'city' => $validatedData['city'] ?? null,
     ]);
 
-    // Création des horaires pour les coachs
     if ($user->role === 'coach') {
         Schedules::create([
             'user_id' => $user->id,
@@ -143,14 +139,12 @@ class UserController extends Controller
         ]);
     }
 
-    // Attachement des objectifs (goals)
     if (!empty($validatedData['goals'])) {
         $user->goals()->attach($validatedData['goals']);
     }
 
     $this->storeImage($user);
 
-    // Réponse avec les données de l'utilisateur et ses objectifs
     return response()->json($user->load('goals'), 201);
 }
 
@@ -256,7 +250,7 @@ class UserController extends Controller
             'goals' => 'nullable|array',
             'goals.*' => 'exists:goals,id',
             'numero' => 'nullable|string|regex:/^0\d{9}$/',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
             'city' => 'nullable|string|max:255', 
             'day_start' => 'nullable|string|in:Lundi,Mardi,Mercredi,Jeudi,Vendredi,Samedi,Dimanche',
             'day_end' => 'nullable|string|in:Lundi,Mardi,Mercredi,Jeudi,Vendredi,Samedi,Dimanche',
