@@ -151,7 +151,7 @@ const Register = () => {
         });
 
         try {
-            await axios.post('https://8d7874e2-40e5-4b63-afd1-071e51070726-00-25ex1vqas2dte.worf.replit.dev/api/users', data, {
+            await axios.post('http://localhost:9200/api/users', data, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },

@@ -18,7 +18,7 @@ function Login() {
         setSuccessMessage('');
 
         try {
-            const response = await axios.post('https://8d7874e2-40e5-4b63-afd1-071e51070726-00-25ex1vqas2dte.worf.replit.dev/api/login', {
+            const response = await axios.post('http://localhost:9200/api/login', {
                 email,
                 password,
             });

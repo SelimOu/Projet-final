@@ -28,7 +28,7 @@ const DashboardClient = () => {
                 const token = localStorage.getItem('token');
                 const userId = localStorage.getItem('userId');
 
-                const userResponse = await axios.get(`https://8d7874e2-40e5-4b63-afd1-071e51070726-00-25ex1vqas2dte.worf.replit.dev/api/users/${userId}`, {
+                const userResponse = await axios.get(`http://localhost:9200/api/users/${userId}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                     },
@@ -40,7 +40,7 @@ const DashboardClient = () => {
                 const goalIds = userData.goals.map(goal => goal.id);
                 setUserGoals(goalIds);
 
-                const allUsersResponse = await axios.get("https://8d7874e2-40e5-4b63-afd1-071e51070726-00-25ex1vqas2dte.worf.replit.dev/api/users", {
+                const allUsersResponse = await axios.get("http://localhost:9200/api/users", {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                     },
