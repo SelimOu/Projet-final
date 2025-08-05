@@ -50,7 +50,7 @@ const Profile = () => {
 
                 setUserId(storedUserId);
 
-                const response = await axios.get(`https://projet-final-jvgt.onrender.com/api/users/${storedUserId}`, {
+                const response = await axios.get(`https://8d7874e2-40e5-4b63-afd1-071e51070726-00-25ex1vqas2dte.worf.replit.dev/api/users/${storedUserId}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                     },
@@ -83,7 +83,7 @@ const Profile = () => {
 
         const fetchSchedules = async (userId, token) => {
             try {
-                const scheduleResponse = await axios.get(`https://projet-final-jvgt.onrender.com/api/schedules/${userId}`, {
+                const scheduleResponse = await axios.get(`https://8d7874e2-40e5-4b63-afd1-071e51070726-00-25ex1vqas2dte.worf.replit.dev/api/schedules/${userId}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                     },
@@ -179,7 +179,7 @@ const Profile = () => {
 
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.post(`https://projet-final-jvgt.onrender.com/api/users/${userId}?_method=PUT`, dataToSend, {
+            const response = await axios.post(`https://8d7874e2-40e5-4b63-afd1-071e51070726-00-25ex1vqas2dte.worf.replit.dev/api/users/${userId}?_method=PUT`, dataToSend, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'multipart/form-data',
@@ -230,7 +230,7 @@ const Profile = () => {
 
         try {
             const token = localStorage.getItem('token');
-            await axios.delete(`https://projet-final-jvgt.onrender.com/api/users/${userId}`, {
+            await axios.delete(`https://8d7874e2-40e5-4b63-afd1-071e51070726-00-25ex1vqas2dte.worf.replit.dev/api/users/${userId}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },
