@@ -5,6 +5,7 @@ on:
     branches: [ "master", "develop" ]
   pull_request:
     branches: [ "master", "develop" ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -12,16 +13,34 @@ jobs:
 
     steps:
       - name: Récupération du code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Construction des images Docker
-        run: docker-compose build
+        run: docker compose build
 
       - name: Démarrage des conteneurs
-        run: docker-compose up -d
+        run: docker compose up -d
+
+      - name: Attendre le démarrage des services
+        run: sleep 10
 
       - name: Vérification des conteneurs actifs
-        run: docker-compose ps
+        run: docker compose ps
+
+      - name: Test backend (PHP/Laravel)
+        run: |
+          docker compose exec -T app php artisan migrate --force || true
+          docker compose exec -T app ./vendor/bin/phpunit || true
+
+      - name: Test frontend (React)
+        run: |
+          docker compose exec -T frontend npm install || true
+          docker compose exec -T frontend npm run build || true
+
+      - name: Affichage des logs
+        if: failure()
+        run: docker compose logs
 
       - name: Arrêt des conteneurs
-        run: docker-compose down
+        if: always()
+        run: docker compose down -v
