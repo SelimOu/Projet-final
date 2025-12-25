@@ -14,24 +14,14 @@ jobs:
       - name: Récupération du code
         uses: actions/checkout@v3
 
-              
-      - name: Installation de Docker Compose
-        run: |
-                sudo apt-get update
-                sudo apt-get install docker-compose -y
-
-              
       - name: Construction des images Docker
         run: docker-compose build
 
-              
       - name: Démarrage des conteneurs
         run: docker-compose up -d
 
-              
       - name: Vérification des conteneurs actifs
         run: docker-compose ps
 
-              
       - name: Arrêt des conteneurs
         run: docker-compose down
